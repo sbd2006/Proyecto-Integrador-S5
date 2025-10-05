@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\PdfController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,7 +19,9 @@ Route::middleware('auth')->group(function () {
     //ruta productos
     Route::resource('/producto', ProductoController::class);
     //pdf
-    Route::get('/pdfProductos', [PdfController::class, 'pdfProductos']) -> name('pdf.productos');
+    Route::get('/pdfProductos', [PdfController::class,'pdfProductos'])->name('producto.pdf');
+ 
+    
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -25,3 +29,4 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
