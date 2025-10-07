@@ -1,24 +1,25 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ isset($producto) ? 'Editar Producto' : 'Agregar Producto' }} - Postres María José</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #fff9fb;
-            color: #4b1e2f;
-            margin: 20px;
-        }
+@extends('layout.dashboard')
 
-        h1 {
-            color: #a64d79;
+@section('titulomain')
+    {{-- Centramos el título visualmente --}}
+    <div class="titulo-centrado">
+        {{ isset($producto) ? 'Editar Producto ✏️' : 'Agregar Nuevo Producto 🍰' }}
+    </div>
+@endsection
+
+@section('contenido')
+    <style>
+        .titulo-centrado {
             text-align: center;
+            margin-bottom: 20px;
+            font-size: 26px;
+            font-weight: bold;
+            color: #a64d79;
         }
 
         form {
             max-width: 600px;
-            margin: 0 auto;
+            margin: 0 auto; /* Centra el formulario */
             background: #f8e1e7;
             padding: 20px;
             border-radius: 10px;
@@ -80,10 +81,6 @@
             background-color: #8b3f67;
         }
     </style>
-</head>
-<body>
-
-    <h1>{{ isset($producto) ? 'Editar Producto' : 'Agregar Nuevo Producto' }}</h1>
 
     <form 
         action="{{ isset($producto) ? route('producto.update', $producto->id) : route('producto.store') }}" 
@@ -126,6 +123,4 @@
             <a href="{{ route('producto.index') }}" class="btn-volver">⬅️ Volver al listado</a>
         </div>
     </form>
-
-</body>
-</html>
+@endsection

@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Categoria;
 use App\Http\Requests\CategoriaRequest;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class CategoriaController extends Controller
-{
-    
+{    
     public function __construct()
     {
         $this->middleware('can:categoria.create')->only(['create', 'store']);
@@ -19,47 +20,76 @@ class CategoriaController extends Controller
     
     public function index(Request $request)
     {
-        $buscar = $request->buscar;
-        $estado = $request->estado;
+        $buscar = $request->input('buscar');
+        $estado = $request->input('estado');
 
-        $categorias = Categoria::filtrar($buscar, $estado)
-            ->orderBy('id','DESC')
-            ->paginate(4)
+        $categorias = Categoria::query()
+            ->when($buscar, function ($q) use ($buscar) {
+                $q->where(function ($w) use ($buscar) {
+                    $w->where('nombre', 'like', "%{$buscar}%")
+                      ->orWhere('descripcion', 'like', "%{$buscar}%");
+                });
+            })
+            ->when($estado !== null && $estado !== '', function ($q) use ($estado) {
+                $q->where('estado', $estado);
+            })
+            ->orderByDesc('id')
+            ->paginate(10)
             ->withQueryString();
 
-        return view('categoria.index', compact('categorias','buscar','estado'));
+        return view('categoria.index', compact('categorias', 'buscar', 'estado'));
     }
 
-    public function create()
+    /**
+     * Form de creación (reutilizado para edición).
+     */
+    public function create(): View
     {
         return view('categoria.create');
     }
 
-    public function store(CategoriaRequest $request)
+    /**
+     * Guardar nueva categoría.
+     */
+    public function store(CategoriaRequest $request): RedirectResponse
     {
         Categoria::create($request->validated());
-        return redirect()->route('categoria.index')->with('success', 'Categoría agregada con éxito');
+
+        return redirect()
+            ->route('categoria.index')
+            ->with('success', 'Categoría agregada con éxito.');
     }
 
-    public function show(Categoria $categoria)
-    {
-
-        return redirect()->route('categoria.index');
-    }
-
-    public function edit(Categoria $categoria)
+    /**
+     * Form de edición (reutiliza la vista create).
+     * Usa route-model binding: {categoria}
+     */
+    public function edit(Categoria $categoria): View
     {
         return view('categoria.create', compact('categoria'));
     }
 
-    public function update(CategoriaRequest $request, Categoria $categoria)
+    /**
+     * Actualizar categoría existente.
+     */
+    public function update(CategoriaRequest $request, Categoria $categoria): RedirectResponse
     {
         $categoria->update($request->validated());
-        return redirect()->route('categoria.index')->with('success', 'Categoría actualizada con éxito');
+
+        return redirect()
+            ->route('categoria.index')
+            ->with('success', 'Categoría actualizada con éxito.');
     }
 
-    public function destroy(Categoria $categoria)
+    /**
+     * Eliminar categoría.
+     */
+    public function destroy(Categoria $categoria): RedirectResponse
     {
         $categoria->delete();
-        return redirect()->route('categoria.index')->with('success', 'Categoría eliminada con éxito');
 
+        return redirect()
+            ->route('categoria.index')
+            ->with('success', 'Categoría eliminada con éxito.');
+    }
+}

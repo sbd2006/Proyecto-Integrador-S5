@@ -1,16 +1,9 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Gestión de Productos - Postres María José</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #fff9fb;
-            color: #4b1e2f;
-            margin: 20px;
-        }
+@extends('layout.dashboard')
 
+@section('titulomain', 'Gestión de Productos 🍰')
+
+@section('contenido')
+    <style>
         h1 {
             color: #a64d79;
             text-align: center;
@@ -91,10 +84,6 @@
             display: inline;
         }
     </style>
-</head>
-<body>
-
-    <h1>Gestión de Productos 🍰</h1>
 
     {{-- Mensajes de éxito --}}
     @if(session('success'))
@@ -151,16 +140,15 @@
                     </td>
                     <td>{{ $p->nombre }}</td>
                     <td>{{ $p->descripcion }}</td>
-                    <td>${{ number_format($p->precio, 2) }}</td>
+                    <td>${{ number_format($p->precio_venta, 2) }}</td>
                     <td>{{ $p->stock }}</td>
                     <td>
                         <a href="{{ route('producto.edit', $p->id) }}" class="btn">✏️ Editar</a>
-                        <form action="{{ route('producto.destroy', $p->id) }}" method="POST" class="form-eliminar">
+                        <form action="{{ route('producto.destroy', $p->id) }}" method="POST" class="form-eliminar" style="display:inline;">
                             @csrf
                             @method('DELETE')
-                            <button type="submit">🗑️ Eliminar</button>
+                            <button type="submit" class="btn" style="background-color:#f25c77;">🗑️ Eliminar</button>
                         </form>
-
                     </td>
                 </tr>
             @empty
@@ -177,52 +165,50 @@
     </div>
 
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const forms = document.querySelectorAll('.form-eliminar');
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('.form-eliminar');
 
-    forms.forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const confirmBox = document.createElement('div');
-            confirmBox.innerHTML = `
-                <div style="
-                    position: fixed; 
-                    top: 0; left: 0; right: 0; bottom: 0; 
-                    background: rgba(0,0,0,0.5);
-                    display: flex; 
-                    justify-content: center; 
-                    align-items: center;
-                    z-index: 1000;
-                ">
-                    <div style="
-                        background: #fff;
-                        padding: 20px;
-                        border-radius: 10px;
-                        text-align: center;
-                        color: #4b1e2f;
-                        font-family: Arial;
-                        width: 300px;
-                    ">
-                        <p>¿Seguro que deseas eliminar este producto?</p>
-                        <button id="btnSi" style="background:#a64d79; color:#fff; border:none; padding:8px 15px; border-radius:5px; margin-right:5px;">Sí, eliminar</button>
-                        <button id="btnNo" style="background:#ccc; border:none; padding:8px 15px; border-radius:5px;">Cancelar</button>
-                    </div>
-                </div>
-            `;
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const confirmBox = document.createElement('div');
+                    confirmBox.innerHTML = `
+                        <div style="
+                            position: fixed; 
+                            top: 0; left: 0; right: 0; bottom: 0; 
+                            background: rgba(0,0,0,0.5);
+                            display: flex; 
+                            justify-content: center; 
+                            align-items: center;
+                            z-index: 1000;
+                        ">
+                            <div style="
+                                background: #fff;
+                                padding: 20px;
+                                border-radius: 10px;
+                                text-align: center;
+                                color: #4b1e2f;
+                                font-family: Arial;
+                                width: 300px;
+                            ">
+                                <p>¿Seguro que deseas eliminar este producto?</p>
+                                <button id="btnSi" style="background:#a64d79; color:#fff; border:none; padding:8px 15px; border-radius:5px; margin-right:5px;">Sí, eliminar</button>
+                                <button id="btnNo" style="background:#ccc; border:none; padding:8px 15px; border-radius:5px;">Cancelar</button>
+                            </div>
+                        </div>
+                    `;
 
-            document.body.appendChild(confirmBox);
+                    document.body.appendChild(confirmBox);
 
-            confirmBox.querySelector('#btnSi').onclick = () => {
-                form.submit();
-            };
+                    confirmBox.querySelector('#btnSi').onclick = () => {
+                        form.submit();
+                    };
 
-            confirmBox.querySelector('#btnNo').onclick = () => {
-                confirmBox.remove();
-            };
+                    confirmBox.querySelector('#btnNo').onclick = () => {
+                        confirmBox.remove();
+                    };
+                });
+            });
         });
-    });
-});
-</script>
-
-</body>
-</html>
+    </script>
+@endsection
