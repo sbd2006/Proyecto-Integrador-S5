@@ -9,7 +9,14 @@ use Illuminate\Http\Request;
 class CategoriaController extends Controller
 {
     
-
+    public function __construct()
+    {
+        $this->middleware('can:categoria.create')->only(['create', 'store']);
+        $this->middleware('can:categoria.index')->only('index');
+        $this->middleware('can:categoria.update')->only(['edit', 'update']);
+        $this->middleware('can:categoria.destroy')->only('destroy');
+    }
+    
     public function index(Request $request)
     {
         $buscar = $request->buscar;
@@ -55,5 +62,4 @@ class CategoriaController extends Controller
     {
         $categoria->delete();
         return redirect()->route('categoria.index')->with('success', 'Categoría eliminada con éxito');
-    }
-}
+

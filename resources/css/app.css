@@ -1,3 +1,445 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --color-texto: #fff;
+    --texto-pequeño: 30px;
+    --color-principal: #8B1E2D;
+    --color-secundario: #F7C331;
+    --color-fondo: #FFFFFF;
+    --color-fondo-alt: #F5F0E8;
+    --color-texto: #333333;
+    --color-extra: #78A75A;
+    --color-texto-claro: #FFFFFF;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--color-fondo-alt);
+    color: var(--color-texto);
+}
+
+.navbar button {
+    font-size: 30px;
+    background: none;
+    cursor: pointer;
+    border: none;
+}
+
+/* ===== Header ===== */
+.header {
+    width: 100%;
+    height: 100vh;
+    background: url(../img/negocio2.jpg) no-repeat center center/cover;
+    background-attachment: fixed;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.contenedor-nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    padding: 30px 60px;
+    display: flex;
+    justify-content: space-between;
+    background-color: rgba(139, 30, 45, 0.8);
+    z-index: 100;
+}
+
+.logo {
+    font-size: 1rem;
+    padding: 5px;
+    color: white;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.1);
+}
+
+.logo img {
+    width: 40px;
+}
+
+.navegacion ul {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    list-style: none;
+}
+
+.navegacion a {
+    text-decoration: none;
+    font-size: 1.2rem;
+    color: white;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.navegacion a:hover {
+    color: var(--color-secundario);
+    transform: scale(1.1);
+}
+
+.textos-header {
+    position: relative;
+    z-index: 100;
+    max-width: 60%;
+    padding: 20px;
+    text-align: center;
+    color: var(--color-texto-claro);
+}
+
+.textos-header h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+.textos-header p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+.container {
+    margin: 30px;
+    background-color: white;
+    padding: 30px;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.container h2 {
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: var(--color-principal);
+}
+
+/* ===== Productos ===== */
+.productos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.producto {
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    height: 400px;
+    background: #fff8f7;
+}
+
+.producto img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.producto h3 {
+    font-size: 1.5rem;
+    margin: 10px 0;
+    color: var(--color-principal);
+}
+
+.producto p {
+    font-size: 1.2rem;
+    color: #444;
+}
+
+/* ===== Sobre nosotros ===== */
+.contenedor-sobre-nosotros {
+    padding: 60px 0;
+    width: 80%;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    align-items: center;
+}
+
+.imagen-sobre-nosotros {
+    width: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.contenido-textos h3 {
+    margin-bottom: 15px;
+    color: var(--color-principal);
+}
+
+.contenido-textos h3 span {
+    display: inline-block;
+    background-color: var(--color-secundario);
+    border-radius: 50%;
+    text-align: center;
+    width: 30px;
+    height: 30px;
+    padding: 2px;
+    color: #fff;
+    font-weight: bold;
+    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.3);
+}
+
+.contenido-textos p {
+    padding: 10px;
+    font-weight: 300;
+    text-align: justify;
+}
+
+/* ===== Testimonios ===== */
+.carrucel {
+    overflow: hidden;
+    max-width: 70%;
+    margin: 0 auto;
+    position: relative;
+}
+
+.carrucel-track {
+    display: flex;
+    animation: slide 12s infinite;
+}
+
+.testimonio {
+    flex: 0 0 100%;
+    padding: 20px;
+}
+
+.testimonio p {
+    font-size: 1.2rem;
+    font-style: italic;
+    color: #555;
+}
+
+.testimonio cite {
+    display: block;
+    margin: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--color-principal);
+}
+
+@keyframes slide {
+    0% {
+        transform: translateX(0);
+    }
+
+    33.33% {
+        transform: translateX(0);
+    }
+
+    38.33% {
+        transform: translateX(-100%);
+    }
+
+    71.66% {
+        transform: translateX(-100%);
+    }
+
+    76.66% {
+        transform: translateX(-200%);
+    }
+
+    96.66% {
+        transform: translateX(-200%);
+    }
+
+    100% {
+        transform: translateX(-300%);
+    }
+}
+
+/* ===== Footer ===== */
+.footer {
+    background: url(../img/negocio2.jpg) no-repeat center bottom / cover;
+    padding: 20px 0;
+    text-align: center;
+    color: var(--color-texto-claro);
+    position: relative;
+}
+
+.footer-links {
+    margin-top: 10px;
+}
+
+.footer-links a {
+    margin: 0 10px;
+    color: var(--color-secundario);
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+.footer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 0;
+}
+
+.footer-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* ===== Responsivo ===== */
+@media(max-width:767px) {
+    .textos-header {
+        font-size: var(--texto-pequeño);
+    }
+
+    .logo {
+        display: none;
+    }
+
+    .container {
+        margin: 0;
+    }
+}
+
+.productos-carrusel {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 20px;
+    padding: 10px;
+}
+
+
+.productos-carrusel::-webkit-scrollbar {
+    display: none;
+}
+
+.producto {
+    min-width: 250px;
+    flex: 0 0 auto;
+}
+
+
+.flecha {
+    background-color: var(--color-principal);
+    color: white;
+    border: none;
+    font-size: 2rem;
+    padding: 5px 10px;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    opacity: 0.7;
+}
+
+.flecha:hover {
+    opacity: 1;
+}
+
+.flecha-izq {
+    left: 10px;
+}
+
+.flecha-der {
+    right: 10px;
+}
+
+#productos {
+    position: relative;
+}
+
+
+body.dark {
+    background-color: #1e1e1e !important;
+    color: #f1f1f1 !important;
+}
+
+body.dark .container {
+    background-color: #2a2a2a !important;
+    color: #f1f1f1 !important;
+}
+
+body.dark .producto {
+    background-color: #333 !important;
+    color: #fff !important;
+}
+
+body.dark .navegacion a {
+    color: #ddd !important;
+}
+
+body.dark .navegacion a:hover {
+    color: #ffeb3b !important;
+}
+
+body.dark .footer {
+    background-color: #111 !important;
+    color: #ccc !important;
+}
+
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark h4,
+body.dark h5,
+body.dark h6 {
+    color: #f1f1f1 !important;
+}
+
+body.dark p,
+body.dark span,
+body.dark li,
+body.dark a {
+    color: #e0e0e0 !important;
+}
+
+body.dark .nav-link {
+    color: #f1f1f1 !important;
+}
+
+#btnDarkMode {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 9999;
+    background: #ffffff00;
+    border: none;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
