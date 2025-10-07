@@ -10,7 +10,7 @@ class PdfController extends Controller
 {
     public function pdfProductos(Request $request)
     {
-        $query = Producto::select('id','nombre','descripcion','precio','precio_venta','stock');
+        $query = Producto::select('id','nombre','descripcion','precio','precio_venta','stock','categoria_id');
 
         // Filtro por categoría
         if ($request->filled('categoria')) {
