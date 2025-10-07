@@ -10,6 +10,18 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+Route::get('/dashboard', function () {
+    return view('layout.dashboard');
+})->name('dashboard');
+
+// 🔹 Ruta temporal para evitar error de "categoria.index"
+Route::get('/categoria', function () {
+    return 'Página de categorías (temporal)';
+})->name('categoria.index');
+
+
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -28,4 +40,5 @@ Route::resource('categoria', CategoriaController::class)
 
 
 require __DIR__.'/auth.php';
+
 
