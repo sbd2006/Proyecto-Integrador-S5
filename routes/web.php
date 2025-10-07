@@ -5,16 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\PdfController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 
 Route::get('/', function () {
     return view('welcome');
-});
-
-
-Route::get('/dashboard', function () {
-    return view('layout.dashboard');
-})->name('dashboard');
+})->name('inicio');
 
 // 🔹 Ruta temporal para evitar error de "categoria.index"
 Route::get('/categoria', function () {
@@ -22,9 +18,8 @@ Route::get('/categoria', function () {
 })->name('categoria.index');
 
 
-
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('layout.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
@@ -41,5 +36,3 @@ Route::resource('categoria', CategoriaController::class)
 
 
 require __DIR__.'/auth.php';
-
-

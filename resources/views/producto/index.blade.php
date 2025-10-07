@@ -122,6 +122,7 @@
                 <th>Imagen</th>
                 <th>Nombre</th>
                 <th>Descripción</th>
+                <th>Categoría</th> {{-- ✅ NUEVA COLUMNA --}}
                 <th>Precio</th>
                 <th>Stock</th>
                 <th>Acciones</th>
@@ -140,6 +141,7 @@
                     </td>
                     <td>{{ $p->nombre }}</td>
                     <td>{{ $p->descripcion }}</td>
+                    <td>{{ $p->categoria->nombre ?? 'Sin categoría' }}</td> {{-- ✅ Muestra la categoría --}}
                     <td>${{ number_format($p->precio_venta, 2) }}</td>
                     <td>{{ $p->stock }}</td>
                     <td>
@@ -153,7 +155,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7">No hay productos registrados.</td>
+                    <td colspan="8">No hay productos registrados.</td>
                 </tr>
             @endforelse
         </tbody>
