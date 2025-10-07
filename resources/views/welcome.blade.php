@@ -28,8 +28,16 @@
                     <li><a href="#">Inicio</a></li>
                     <li><a href="#productos">Productos</a></li>
                     <li><a href="#about-us">Nosotros</a></li>
-                    <li><a href="dashboard">Iniciar Sesion</a></li>
-                    <li><a href="register">Registrarse</a></li>
+                @guest
+                    <!-- Solo se muestran si el usuario NO ha iniciado sesión -->
+                    <a href="{{ route('login') }}" class="btn btn-outline-light">Iniciar Sesión</a>
+                    <a href="{{ route('register') }}" class="btn btn-light">Registrarse</a>
+                @endguest
+
+                @auth
+                    <!-- Solo se muestra si el usuario SÍ ha iniciado sesión -->
+                    <a href="{{ route('dashboard') }}" class="btn btn-light">Ir al Dashboard</a>
+                @endauth
                 </ul>
             </nav>
         </div>

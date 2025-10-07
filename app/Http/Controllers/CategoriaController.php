@@ -7,6 +7,7 @@ use App\Http\Requests\CategoriaRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Routing\Controller;
 
 class CategoriaController extends Controller
 {    

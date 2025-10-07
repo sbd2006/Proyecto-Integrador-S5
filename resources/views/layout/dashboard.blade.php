@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>@yield('titulomain') - Postres María José</title>
+    <title>@yield('title', 'Panel de Control') - Postres María José</title>
     <style>
         body {
             margin: 0;
@@ -121,14 +121,18 @@
         </div>
 
         <div class="menu">
-            <a href="{{ route('dashboard') }}">🏠 Inicio</a>
+            <a href="{{ route('inicio') }}">🏠 Inicio</a>
             <a href="{{ route('producto.index') }}">🍰 Productos</a>
             <a href="{{ route('categoria.index') }}">🏷️ Categorías</a>
         </div>
 
-        <div class="logout">
-            <a href="#">🚪 Salir</a>
-        </div>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="btn btn-danger" style="border:none; background:none; color:white;">
+                Salir
+            </button>
+        </form>
+
     </div>
 
     <div class="content">
