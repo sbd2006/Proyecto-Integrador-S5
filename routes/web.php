@@ -15,8 +15,6 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
-    //ruta categorias
-    Route::resource('/categoria', CategoriaController::class);
     //ruta productos
     Route::resource('/producto', ProductoController::class);
     //pdf
@@ -24,8 +22,9 @@ Route::get('/dashboard', function () {
  
     
 Route::resource('categoria', CategoriaController::class)
-    ->parameters(['categoria' => 'categoria'])
-    ->except(['show']);                      
+    ->parameters(['categoria' => 'categoria']) // evita 'categorium'
+    ->except(['show']);
+                    
 
 
 require __DIR__.'/auth.php';
