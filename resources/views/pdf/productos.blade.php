@@ -94,7 +94,7 @@
                     <td>{{ $p->descripcion }}</td>
                     <td>${{ number_format($p->precio, 2) }}</td>
                     <td>{{ $p->stock }}</td>
-                    {{-- <td>{{ $p->categoria->nombre ?? 'Sin categoría' }}</td> --}}
+                    <td>{{ $p->categoria->nombre ?? 'Sin categoría' }}</td>
                 </tr>
             @endforeach
         </tbody>
