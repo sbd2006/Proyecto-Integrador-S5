@@ -9,11 +9,16 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class CategoriaController extends Controller
-{
-    /**
-     * Listado con filtros y paginación.
-     */
-    public function index(Request $request): View
+{    
+    public function __construct()
+    {
+        $this->middleware('can:categoria.create')->only(['create', 'store']);
+        $this->middleware('can:categoria.index')->only('index');
+        $this->middleware('can:categoria.update')->only(['edit', 'update']);
+        $this->middleware('can:categoria.destroy')->only('destroy');
+    }
+    
+    public function index(Request $request)
     {
         $buscar = $request->input('buscar');
         $estado = $request->input('estado');
