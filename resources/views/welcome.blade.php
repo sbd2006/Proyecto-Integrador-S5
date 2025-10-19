@@ -28,9 +28,26 @@
                     <li><a href="#">Inicio</a></li>
                     <li><a href="#productos">Productos</a></li>
                     <li><a href="#about-us">Nosotros</a></li>
-                    <li><a href="dashboard">Iniciar Sesion</a></li>
-                    <li><a href="register">Registrarse</a></li>
-                </ul>
+
+                    @guest
+                    <!-- Solo se muestran si el usuario NO ha iniciado sesión -->
+                    <a href="{{ route('login') }}" class="btn btn-outline-light">Iniciar Sesión</a>
+                    <a href="{{ route('register') }}" class="btn btn-light">Registrarse</a>
+                    @endguest
+
+                    @auth
+                    <!-- Si el usuario ha iniciado sesión -->
+                    @if(Auth::user()->rol === 'admin')
+                    <a href="{{ route('admin.dashboard') }}" class="btn btn-light">Panel Admin</a>
+                    @elseif(Auth::user()->rol === 'usuario')
+                    <a href="{{ route('usuario.dashboard') }}" class="btn btn-light">Panel Usuario</a>
+                    @endif
+
+                    <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-light">Cerrar sesión</button>
+                    </form>
+                    @endauth
             </nav>
         </div>
 
