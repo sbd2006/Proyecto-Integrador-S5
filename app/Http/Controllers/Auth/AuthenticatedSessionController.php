@@ -39,7 +39,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         // Si no tiene rol o no coincide
-        return redirect()->intended(route('usuario.dashboard', absolute: false));
+        return redirect()->intended(route('user.dashboard', absolute: false));
     }
 
 

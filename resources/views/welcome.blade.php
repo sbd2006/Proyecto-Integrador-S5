@@ -24,7 +24,7 @@
             </a>
 
             <nav class="navegacion">
-                <ul>
+                <ul class="ulList">
                     <li><a href="#">Inicio</a></li>
                     <li><a href="#productos">Productos</a></li>
                     <li><a href="#about-us">Nosotros</a></li>
@@ -36,11 +36,10 @@
                     @endguest
 
                     @auth
-                    <!-- Si el usuario ha iniciado sesión -->
-                    @if(Auth::user()->rol === 'admin')
+                    @if(Auth::user()->hasRole('admin'))
                     <a href="{{ route('admin.dashboard') }}" class="btn btn-light">Panel Admin</a>
-                    @elseif(Auth::user()->rol === 'usuario')
-                    <a href="{{ route('usuario.dashboard') }}" class="btn btn-light">Panel Usuario</a>
+                    @elseif(Auth::user()->hasRole('user'))
+                    <a href="{{ route('user.dashboard') }}" class="btn btn-light">Panel Usuario</a>
                     @endif
 
                     <form method="POST" action="{{ route('logout') }}" style="display:inline;">

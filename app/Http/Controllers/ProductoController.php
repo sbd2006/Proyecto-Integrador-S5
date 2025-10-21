@@ -8,29 +8,34 @@ use Illuminate\Http\Request;
 
 class ProductoController extends Controller
 {
-    public function index(Request $request)
-    {
-        // ❌ Eliminamos el uso de Categoria para evitar errores
-        $categorias = []; // Esto evita errores en la vista
+public function index(Request $request)
+{
+    $categorias = [];
+    $query = Producto::query();
 
-        $query = Producto::query();
+    // Filtro por stock
+    if ($request->stock == 'con') {
+        $query->where('stock', '>', 0);
+    } elseif ($request->stock == 'sin') {
+        $query->where('stock', '<=', 0);
+    }
 
-        // Filtro por stock
-        if ($request->stock == 'con') {
-            $query->where('stock', '>', 0);
-        } elseif ($request->stock == 'sin') {
-            $query->where('stock', '<=', 0);
-        }
+    // Filtro por nombre
+    if ($request->filled('buscar')) {
+        $query->where('nombre', 'like', '%' . $request->buscar . '%');
+    }
 
-        // Filtro por nombre
-        if ($request->filled('buscar')) {
-            $query->where('nombre', 'like', '%' . $request->buscar . '%');
-        }
+    $productos = $query->orderBy('id', 'DESC')->paginate(4);
 
-        $productos = $query->orderBy('id', 'DESC')->paginate(4);
-
+    // 👇 Si el usuario es ADMIN → muestra la vista de admin
+    if (auth()->user()->hasRole('admin')) {
         return view('producto.index', compact('productos', 'categorias'));
     }
+
+    // 👇 Si el usuario es USER → muestra la vista de usuario
+    return view('user.productos', compact('productos'));
+}
+
 
     public function create()
     {

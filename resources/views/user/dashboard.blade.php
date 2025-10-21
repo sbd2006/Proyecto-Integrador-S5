@@ -129,7 +129,7 @@
 
         <div class="menu">
             <a href="{{ route('inicio') }}">🏠 Inicio</a>
-            <a href="{{ route('producto.index') }}">🍰 Productos</a>
+            <a href="{{ route('productos.index') }}">🍰 Ver productos</a>
             <a href="{{ route('categoria.index') }}">🏷️ Categorías</a>
         </div>
 
