@@ -70,7 +70,7 @@
 
     <header>
         {{-- Cambia la ruta del logo si lo tienes --}}
-        <img src="{{ public_path('img/logo.png') }}" alt="Logo de Postres María José">
+        <img src="{{ public_path('img/Logo.jpg') }}" alt="Logo de Postres María José" width="100">
         <h1>Postres María José</h1>
         <h2>Reporte de Productos</h2>
     </header>
@@ -94,7 +94,7 @@
                     <td>{{ $p->descripcion }}</td>
                     <td>${{ number_format($p->precio, 2) }}</td>
                     <td>{{ $p->stock }}</td>
-                    {{-- <td>{{ $p->categoria->nombre ?? 'Sin categoría' }}</td> --}}
+                    <td>{{ $p->categoria->nombre ?? 'Sin categoría' }}</td>
                 </tr>
             @endforeach
         </tbody>
