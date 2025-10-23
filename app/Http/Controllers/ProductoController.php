@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Producto;
 use App\Http\Requests\ProductoRequest;
 use Illuminate\Http\Request;
+use App\Models\Categoria;
+
 
 class ProductoController extends Controller
 {
@@ -39,10 +41,10 @@ public function index(Request $request)
 
     public function create()
     {
-        // ❌ Eliminamos el uso de Categoria
-        $categorias = [];
-
+        
+        $categorias = Categoria::where('estado', 1)->get(); // solo las activas
         return view('producto.create', compact('categorias'));
+
     }
 
     public function store(ProductoRequest $request)
@@ -64,18 +66,14 @@ public function index(Request $request)
             ->with('success', 'Producto agregado con éxito');
     }
 
-    public function show(Producto $producto)
-    {
-        return view('producto.show', compact('producto'));
-    }
 
-    public function edit($id)
+    public function edit(Producto $producto) 
     {
-        $producto = Producto::findOrFail($id);
         $categorias = []; // Evita errores en la vista
-
+        $categorias = Categoria::where('estado', 1)->get();
         return view('producto.create', compact('producto', 'categorias'));
     }
+    
 
     public function update(ProductoRequest $request, $id)
     {

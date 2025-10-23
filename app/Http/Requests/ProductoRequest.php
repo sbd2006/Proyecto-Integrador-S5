@@ -20,7 +20,7 @@ class ProductoRequest extends FormRequest
             'precio_venta' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'imagen' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'id_categoria' => 'nullable|integer',
+            'categoria_id' => 'required|exists:categorias,id',
         ];
     }
 

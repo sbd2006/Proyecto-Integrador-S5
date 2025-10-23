@@ -3,6 +3,7 @@
 @section('titulomain', 'Gestión de Productos 🍰')
 
 @section('contenido')
+
 <style>
     h1 {
         color: #a64d79;
@@ -180,6 +181,7 @@
                 e.preventDefault();
                 const confirmBox = document.createElement('div');
                 confirmBox.innerHTML = `
+                
                         <div style="
                             position: fixed; 
                             top: 0; left: 0; right: 0; bottom: 0; 

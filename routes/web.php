@@ -8,6 +8,7 @@ use App\Http\Controllers\PdfController;
 use App\Http\Controllers\CarritoController;
 
 
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -24,7 +25,6 @@ Route::get('/dashboard', function () {
 Route::get('/categoria', function () {
     return 'Página de categorías (temporal)';
 })->name('categoria.index');
-
 
 // Dashboard para administrador
 Route::get('/admin/dashboard', function () {
@@ -56,6 +56,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 Route::get('/pdfProductos', [PdfController::class, 'pdfProductos'])->name('producto.pdf');
 
 
+
 Route::resource('categoria', CategoriaController::class)
     ->parameters(['categoria' => 'categoria']) // evita 'categorium'
     ->except(['show']);
@@ -67,6 +68,5 @@ Route::get('/carrito', function () {
 })->name('carrito.index');
 Route::delete('/carrito/eliminar/{id}', [App\Http\Controllers\CarritoController::class, 'eliminar'])->name('carrito.eliminar');
 
-
-
 require __DIR__ . '/auth.php';
+

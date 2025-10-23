@@ -16,7 +16,15 @@ class Producto extends Model
         'precio_venta',
         'stock',
         'imagen',
-        // 'id_categoria', ← cuando tus compañeros creen esa parte
+        'categoria_id', 
     ];
+
+    public function categoria()
+{
+    return $this->belongsTo(Categoria::class);
 }
+
+}
+
+
 
