@@ -35,26 +35,30 @@
                     <a href="{{ route('register') }}" class="btn btn-light">Registrarse</a>
                     @endguest
 
-                    <li>@livewire("icono-carrito")</li>
-
+                    
                     @auth
                     @if(Auth::user()->hasRole('admin'))
                     <a href="{{ route('admin.dashboard') }}" class="btn btn-light">Panel Admin</a>
                     @elseif(Auth::user()->hasRole('user'))
                     <a href="{{ route('user.dashboard') }}" class="btn btn-light">Panel Usuario</a>
                     @endif
-
+                    
+                    
                     <form method="POST" action="{{ route('logout') }}" style="display:inline;">
                         @csrf
                         <button type="submit" class="btn btn-outline-light">Cerrar sesión</button>
                     </form>
                     @endauth
+                    <li>@livewire("icono-carrito")</li>
             </nav>
         </div>
 
         <div class="textos-header">
             <h1>Bienvenidos a Postres María José</h1>
-            <p>Deliciosos postres caseros hechos con amor y los mejores ingredientes. ¡Endulza tus momentos con nosotros!</p>
+            <center>
+                <p>Deliciosos postres caseros hechos con amor y los mejores ingredientes.</p>
+                <p>¡Endulza tus momentos con nosotros!</p>
+            </center>
         </div>
     </header>
 
