@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>@yield('title', 'Panel de Control') - Postres María José</title>
@@ -110,6 +111,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="sidebar">
@@ -117,7 +119,12 @@
 
         <div class="user">
             <img src="https://cdn-icons-png.flaticon.com/512/146/146005.png" alt="Usuario">
-            <div class="user-name">Admin</div>
+            <div class="user-name">
+                {{ Auth::user()->name }}
+                @if(Auth::user()->rol === 'admin')
+                (Administrador)
+                @endif
+            </div>
         </div>
 
         <div class="menu">
@@ -128,7 +135,7 @@
 
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="btn btn-danger" style="border:none; background:none; color:white;">
+            <button type="submit" class="btn btn-danger" style="border:none; background:none; color:white; cursor: pointer;">
                 Salir
             </button>
         </form>
@@ -146,4 +153,5 @@
     </div>
 
 </body>
+
 </html>

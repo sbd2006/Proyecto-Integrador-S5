@@ -44,8 +44,15 @@ class ProductoController extends Controller
         // Para el <select> de categorías en la vista
         $categorias = Categoria::orderBy('nombre')->get(['id','nombre']);
 
+    // 👇 Si el usuario es ADMIN → muestra la vista de admin
+    if (auth()->user()->hasRole('admin')) {
         return view('producto.index', compact('productos', 'categorias'));
     }
+
+    // 👇 Si el usuario es USER → muestra la vista de usuario
+    return view('user.productos', compact('productos'));
+}
+
 
     public function create()
     {

@@ -1,4 +1,4 @@
-@extends('layout.dashboard')
+@extends('admin.dashboard')
 
 @section('titulomain', 'Gestión de Productos 🍰')
 
@@ -175,5 +175,6 @@
                 });
             });
         });
-    </script>
+    });
+</script>
 @endsection
