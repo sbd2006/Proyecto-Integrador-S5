@@ -33,8 +33,8 @@ Route::get('/admin/dashboard', function () {
 
 
 Route::get('/user/dashboard', function () {
-    return view('user.dashboard');
-})->middleware(['auth', 'role:user'])->name('user.dashboard');
+    return view('welcome');
+})->middleware(['auth', 'role:user'])->name('welcome');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', function () {
