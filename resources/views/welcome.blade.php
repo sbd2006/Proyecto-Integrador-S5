@@ -39,8 +39,6 @@
                     @auth
                     @if(Auth::user()->hasRole('admin'))
                     <a href="{{ route('admin.dashboard') }}" class="btn btn-light">Panel Admin</a>
-                    @elseif(Auth::user()->hasRole('user'))
-                    <a href="{{ route('user.dashboard') }}" class="btn btn-light">Panel Usuario</a>
                     @endif
                     
                     
