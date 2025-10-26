@@ -56,6 +56,14 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('productos/{producto}', [ProductoController::class, 'show'])->name('productos.detalle');
 });
 //pdf
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('venta', VentaController::class)->only(['index', 'show']);
+    Route::put('ventas/{venta}/estado', [VentaController::class, 'cambiarEstado'])->name('venta.cambiarEstado');
+});
+
+Route::get('/venta', [VentaController::class, 'index'])->name('venta.index');
+
 Route::get('/pdfProductos', [PdfController::class, 'pdfProductos'])->name('producto.pdf');
 
 
