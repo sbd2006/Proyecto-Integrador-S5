@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+;<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -39,6 +39,7 @@
                     @endguest
 
                     @auth
+
                         @if (Auth::user()->hasRole('admin'))
                             <a href="{{ route('admin.dashboard') }}" class="btn btn-light">Panel Admin</a>
                         @elseif (Auth::user()->hasRole('user'))
@@ -54,6 +55,7 @@
                             @csrf
                             <button type="submit" class="btn btn-outline-light">Cerrar sesión</button>
                         </form>
+
                     @endauth
 
                     <li>@livewire("icono-carrito")</li>

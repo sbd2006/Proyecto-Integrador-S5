@@ -4,6 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\PdfController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\VentaController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PedidoController;
@@ -33,8 +37,8 @@ Route::get('/admin/dashboard', function () {
 
 
 Route::get('/user/dashboard', function () {
-    return view('user.dashboard');
-})->middleware(['auth', 'role:user'])->name('user.dashboard');
+    return view('welcome');
+})->middleware(['auth', 'role:user'])->name('welcome');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', function () {
@@ -58,6 +62,34 @@ Route::get('/pdfProductos', [PdfController::class, 'pdfProductos'])->name('produ
 Route::resource('categoria', CategoriaController::class)
     ->parameters(['categoria' => 'categoria']) // evita 'categorium'
     ->except(['show']);
+
+Route::get('/checkout', [PaymentController::class, 'checkout'])->name('checkout');
+Route::post('/checkout', [PaymentController::class, 'pagar'])->name('checkout.pagar');
+
+Route::prefix('reportes')->name('reportes.')->group(function () {
+    // Formulario
+    Route::get('ventas', [ReportController::class, 'ventasForm'])->name('ventas');
+    // Generar PDF
+    Route::get('ventas/pdf', [ReportController::class, 'ventasPdf'])->name('ventas.pdf');
+    
+    Route::get('ventas/resumen', [ReportController::class, 'resumen'])->name('ventas.resumen');
+
+    Route::get('ventas/resumen/pdf', [ReportController::class, 'resumenPdf'])->name('ventas.resumen.pdf');
+});
+
+// Venta rápida (sin detalle)
+Route::prefix('ventas/rapida')->name('ventas.rapida.')->group(function () {
+    Route::get('/', [VentaController::class, 'createQuick'])->name('create');
+    Route::post('/', [VentaController::class, 'storeQuick'])->name('store');
+});
+
+// Finalización de venta DESDE carrito externo (tu compañero)
+Route::post('/ventas/finalizar', [VentaController::class, 'finalizarDesdeCarrito'])
+    ->name('ventas.finalizar');
+
+// Ver factura PDF
+Route::get('/ventas/{order}/factura', [VentaController::class, 'factura'])
+    ->name('ventas.factura');
 
 Route::post('/carrito/agregar/{id}', [CarritoController::class, 'agregar'])->name('carrito.agregar');
 Route::get('/carrito', function () {

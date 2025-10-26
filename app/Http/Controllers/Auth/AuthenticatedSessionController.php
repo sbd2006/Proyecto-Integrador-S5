@@ -34,12 +34,12 @@ class AuthenticatedSessionController extends Controller
         // Redirigir según el rol usando Spatie
         if ($user->hasRole('admin')) {
             return redirect()->route('admin.dashboard');
-        } elseif ($user->hasRole('usuario')) {
-            return redirect()->route('usuario.dashboard');
+        } elseif ($user->hasRole('user')) {
+            return redirect()->route('welcome');
         }
 
         // Si no tiene rol o no coincide
-        return redirect()->intended(route('user.dashboard', absolute: false));
+        return redirect()->intended(route('welcome', absolute: false));
     }
 
 
