@@ -1,6 +1,18 @@
 <div class="carrito-flotante">
     <h3>Carrito</h3>
 
+        @if (session()->has('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session()->has('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
     @forelse($productos as $item)
     <div class="producto-carrito">
         <img src="{{ asset('img/' . $item['producto']->imagen) }}" alt="{{ $item['producto']->nombre }}">
@@ -33,6 +45,6 @@
     <p class="total">Total: ${{ number_format($totalVenta, 2) }}</p>
 
     <button wire:click="vaciarCarrito" class="btn-vaciar">Vaciar carrito</button>
-    <a href="" class="btn-finalizar">Finalizar Compra</a>
+    <button wire:click="finalizarCompra" class="btn-finalizar">Finalizar Compra</button>
     @endif
 </div>

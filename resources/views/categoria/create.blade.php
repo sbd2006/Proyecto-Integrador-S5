@@ -1,4 +1,4 @@
-@extends('layout.dashboard')
+@extends('admin.dashboard')
 
 @section('titulomain', isset($categoria) ? 'Editar Categoría' : 'Agregar Categoría')
 
