@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\CategoriaController;
@@ -10,7 +9,8 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\VentaController;
 use App\Http\Controllers\CarritoController;
-
+use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\PedidoController;
 
 
 Route::get('/', function () {
@@ -49,7 +49,6 @@ Route::middleware(['auth'])->group(function () {
 //ruta productos
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('producto', ProductoController::class);
-    Route::resource('categoria', CategoriaController::class);
 });
 
 Route::middleware(['auth', 'role:user'])->group(function () {
@@ -58,7 +57,6 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 });
 //pdf
 Route::get('/pdfProductos', [PdfController::class, 'pdfProductos'])->name('producto.pdf');
-
 
 
 Route::resource('categoria', CategoriaController::class)
@@ -99,6 +97,47 @@ Route::get('/carrito', function () {
     return view('carrito.index', compact('carrito'));
 })->name('carrito.index');
 Route::delete('/carrito/eliminar/{id}', [App\Http\Controllers\CarritoController::class, 'eliminar'])->name('carrito.eliminar');
+
+Route::middleware(['auth', 'role:user'])->group(function () {
+    Route::post('/perfil', [PerfilController::class, 'update'])->name('perfil.update');
+});
+
+Route::middleware('auth')->group(function () {
+
+    // 🧑‍💼 Panel de pedidos (vista general para el admin)
+    Route::get('/admin/pedidos', [PedidoController::class, 'panelAdmin'])
+        ->name('admin.pedidos');
+
+    // 📦 Listado de pedidos en formato JSON (para actualizar vista del admin)
+    Route::get('/pedidos/json', [PedidoController::class, 'indexJson'])
+        ->name('pedidos.json');
+
+    // 🛒 El cliente crea un pedido (desde el carrito)
+    Route::post('/pedidos', [PedidoController::class, 'store'])
+        ->name('pedidos.store');
+
+    // 👤 El cliente ve solo sus pedidos
+    Route::get('/mis-pedidos/json', [PedidoController::class, 'pedidosPorCliente'])
+        ->name('mis.pedidos.json');
+
+    // 🔄 Cambiar el estado del pedido (lo usa el admin)
+    Route::patch('/pedidos/{id}/estado', [PedidoController::class, 'actualizarEstado'])
+        ->name('pedidos.actualizar');
+});
+
+// 🔒 Rutas del cliente autenticado (rol: user)
+Route::middleware(['auth', 'role:user'])->group(function () {
+    // Vista del cliente (Blade)
+    Route::get('/mis-pedidos', [PedidoController::class, 'vistaPedidosCliente'])
+        ->name('cliente.pedidos');
+
+    // Datos JSON que consume Axios en la vista
+    Route::get('/mis-pedidos/json', [PedidoController::class, 'pedidosPorCliente'])
+        ->name('cliente.pedidos.json');
+});
+
+Route::get('/mis-pedidos/cantidad', [PedidoController::class, 'contarPedidosCliente'])
+    ->name('cliente.pedidos.cantidad');
 
 require __DIR__ . '/auth.php';
 

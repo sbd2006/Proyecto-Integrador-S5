@@ -1,4 +1,4 @@
-@extends('layout.dashboard')
+@extends('admin.dashboard')
 
 @section('title', isset($producto) ? 'Editar Producto' : 'Agregar Nuevo Producto')
 

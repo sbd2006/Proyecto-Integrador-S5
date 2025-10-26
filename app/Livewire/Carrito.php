@@ -4,6 +4,9 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Session;
+use App\Models\Pedido;
+use App\Models\PedidoDetalle;
+use Illuminate\Support\Facades\Auth;
 
 class Carrito extends Component
 {
@@ -83,6 +86,41 @@ class Carrito extends Component
                 $this->totalVenta += $item['producto']->precio * $item['cantidad'];
             }
         }
+    }
+
+    public function finalizarCompra()
+    {
+        if (count($this->productos) === 0) {
+            session()->flash('error', 'No hay productos en el carrito.');
+            return;
+        }
+
+        // Crear el pedido principal
+        $pedido = Pedido::create([
+            'cliente_id' => Auth::id(), // columna correcta en tu tabla
+            'total' => $this->totalVenta,
+            'estado' => 'pendiente',
+            'direccion_entrega' => 'Dirección de ejemplo', // Puedes reemplazar con un campo real o formulario
+            'metodo_pago' => 'efectivo', // o "tarjeta", según lo que manejes
+            'nota' => 'Sin observaciones', // o podrías dejarlo null
+        ]);
+
+        // Crear los detalles del pedido
+        foreach ($this->productos as $item) {
+            PedidoDetalle::create([
+                'pedido_id' => $pedido->id,
+                'producto_id' => $item['producto']->id,
+                'cantidad' => $item['cantidad'],
+                'precio_unitario' => $item['producto']->precio,
+                'subtotal' => $item['producto']->precio * $item['cantidad'],
+            ]);
+        }
+
+        // Vaciar el carrito
+        $this->vaciarCarrito();
+
+        // Mensaje de éxito
+        session()->flash('success', 'Pedido realizado con éxito. ¡Gracias por tu compra!');
     }
 
     public function render()
