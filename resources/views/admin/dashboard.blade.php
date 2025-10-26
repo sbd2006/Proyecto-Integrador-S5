@@ -19,7 +19,7 @@
             width: 250px;
             background-color: #a64d79;
             color: white;
-            height: 100vh;
+            height: auto;
             display: flex;
             flex-direction: column;
             align-items: center;
