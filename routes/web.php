@@ -8,7 +8,6 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\VentaController;
-use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PedidoController;
 
@@ -98,13 +97,6 @@ Route::post('/ventas/finalizar', [VentaController::class, 'finalizarDesdeCarrito
 // Ver factura PDF
 Route::get('/ventas/{order}/factura', [VentaController::class, 'factura'])
     ->name('ventas.factura');
-
-Route::post('/carrito/agregar/{id}', [CarritoController::class, 'agregar'])->name('carrito.agregar');
-Route::get('/carrito', function () {
-    $carrito = session('carrito', []);
-    return view('carrito.index', compact('carrito'));
-})->name('carrito.index');
-Route::delete('/carrito/eliminar/{id}', [App\Http\Controllers\CarritoController::class, 'eliminar'])->name('carrito.eliminar');
 
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('/perfil', [PerfilController::class, 'update'])->name('perfil.update');

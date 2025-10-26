@@ -1,4 +1,4 @@
-@extends('layout.dashboard')
+@extends('cliente.pedidos')
 {{-- Quitamos el título del layout --}}
 @section('titulomain') @endsection
 
@@ -13,7 +13,13 @@
   *, *::before, *::after { box-sizing: border-box; }
 
   body{ background: var(--bg); }
-  .wrap{ max-width: 860px; margin: 24px auto; padding: 0 16px; }
+  .wrap{ 
+    max-width: 860px; 
+    margin: auto auto; 
+    margin-top: 85px;
+    margin-bottom: 24px;
+    padding: 0 16px;
+  }
   .title{ color: var(--brand); font-weight: 800; margin-bottom: 16px; }
 
   .alert{ background: var(--ok); padding: 12px 14px; border-radius: 10px; margin-bottom: 16px; }
@@ -79,7 +85,7 @@
   .method .cardx:hover{ transform: translateY(-2px); }
 
   .actions{ display:flex; justify-content:flex-end; margin-top:6px; }
-  .btn{
+  .bttn{
     background: var(--brand);
     color:#fff;
     border:0;
@@ -89,12 +95,12 @@
     cursor:pointer;
     transition:.15s;
   }
-  .btn:hover{ background: var(--brand-600); transform: translateY(-1px); }
+  .bttn:hover{ background: var(--brand-600); transform: translateY(-1px); }
   .hint{ color:var(--muted); font-size:.92rem; margin-top:6px; }
 </style>
 
 <div class="wrap">
-  <h1 class="title">Pago simulado</h1>
+  <h1 class="title">Pago</h1>
 
   @if(session('ok'))
     <div class="alert">{{ session('ok') }}</div>
@@ -114,7 +120,7 @@
     @csrf
 
     <div class="field">
-      <label>Total (simulado)</label>
+      <label>Total</label>
       <input type="number" name="total" step="0.01" min="0"
              value="{{ old('total', 0) }}" placeholder="Ej: 120000" required>
       <p class="hint">Este valor es solo de prueba.</p>
@@ -155,7 +161,7 @@
     </div>
 
     <div class="actions">
-      <button type="submit" class="btn">Simular pago</button>
+      <button type="submit" class="bttn">Simular pago</button>
     </div>
   </form>
 </div>

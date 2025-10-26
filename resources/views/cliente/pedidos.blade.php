@@ -17,12 +17,14 @@
     }
 
     .contenedor-pedidos {
-        max-width: 1000px;
-        margin: 40px auto;
-        padding: 25px;
-        background: #ffffff;
-        border-radius: 18px;
-        box-shadow: 0 6px 16px rgba(166, 77, 121, 0.15);
+        max-width: 1100px;
+        margin: auto auto;
+        margin-top: 80px;
+        margin-bottom: 40px;
+        background: #fff9fb;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(166, 77, 121, 0.15);
     }
 
     .titulo-seccion {

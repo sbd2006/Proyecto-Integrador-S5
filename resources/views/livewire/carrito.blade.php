@@ -45,6 +45,8 @@
     <p class="total">Total: ${{ number_format($totalVenta, 2) }}</p>
 
     <button wire:click="vaciarCarrito" class="btn-vaciar">Vaciar carrito</button>
-    <button wire:click="finalizarCompra" class="btn-finalizar">Finalizar Compra</button>
+    <a href="{{ route('checkout') }}">
+        <button wire:click="finalizarCompra" class="btn-finalizar">Finalizar Compra</button>
+    </a>
     @endif
 </div>
