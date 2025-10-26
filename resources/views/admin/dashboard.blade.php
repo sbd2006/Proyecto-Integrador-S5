@@ -131,6 +131,8 @@
             <a href="{{ route('inicio') }}">🏠 Inicio</a>
             <a href="{{ route('producto.index') }}">🍰 Productos</a>
             <a href="{{ route('categoria.index') }}">🏷️ Categorías</a>
+            <a href="{{ route('venta.index') }}">🏷️ Ventas</a>
+
         </div>
 
         <form method="POST" action="{{ route('logout') }}">
