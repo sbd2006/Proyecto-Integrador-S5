@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use App\Models\Venta;
+use App\Models\DetalleVenta;
+use App\Models\Pedido;
 
 class PaymentController extends Controller
 {
@@ -17,32 +20,65 @@ class PaymentController extends Controller
         return view('checkout', compact('metodos'));
     }
 
-    public function pagar(Request $r)
+    public function pagar(Request $request)
     {
-        $r->validate([
-            'payment_method_id' => 'required|exists:payment_methods,id',
+        // ✅ Validar datos
+        $validated = $request->validate([
+            'pedido_id'         => 'required|exists:pedidos,id',
             'total'             => 'required|numeric|min:0',
+            'payment_method_id' => 'required|exists:payment_methods,id',
             'notas'             => 'nullable|string|max:255',
-            // si no hay login, el email es opcional (solo para mostrarlo en la factura)
             'email'             => Auth::check() ? 'nullable|email' : 'nullable|email',
         ]);
 
-        $order = Order::create([
-            'user_id'           => Auth::id(), // o null si no hay login
-            'total'             => $r->input('total'),
-            'payment_method_id' => $r->input('payment_method_id'),
-            'status'            => 'pendiente',
-            'referencia'        => 'SIM-'.Str::upper(Str::random(8)),
-            'notas'             => $r->input('notas'),
+        // ✅ Buscar el pedido con sus detalles
+        $pedido = Pedido::with('detalles.producto')->findOrFail($validated['pedido_id']);
+
+        // ✅ Crear la venta
+        $venta = Venta::create([
+            'user_id' => auth()->id(),
+            'total'   => $validated['total'],
+            'estado'  => 'pagado',
         ]);
 
-        $method = $order->paymentMethod;
+        // ✅ Crear los detalles de la venta
+        foreach ($pedido->detalles as $detalle) {
+            DetalleVenta::create([
+                'venta_id'    => $venta->id,
+                'producto_id' => $detalle->producto_id,
+                'cantidad'    => $detalle->cantidad,
+                'precio'      => $detalle->precio_unitario,
+            ]);
+        }
 
-        // Generar PDF y abrirlo inline en el navegador
+        // ✅ Cambiar estado del pedido
+        $pedido->update(['estado' => 'entregado']);
+
+        // ✅ Crear la orden (para generar factura)
+        $order = Order::create([
+            'user_id'           => Auth::id(),
+            'total'             => $validated['total'],
+            'payment_method_id' => $validated['payment_method_id'],
+            'status'            => 'pagado',
+            'referencia'        => 'ORD-' . strtoupper(Str::random(8)),
+            'notas'             => $validated['notas'] ?? null,
+        ]);
+
+        // ✅ Agregar productos desde el pedido
+        foreach ($pedido->detalles as $detalle) {
+            $order->items()->create([
+                'producto_id'     => $detalle->producto_id,
+                'cantidad'        => $detalle->cantidad,
+                'precio_unitario' => $detalle->precio_unitario,
+                'subtotal'        => $detalle->subtotal,
+            ]);
+        }
+
+        // ✅ Generar y mostrar la factura en PDF
         $pdf = PDF::loadView('pdf.invoice', [
-            'order'  => $order,
-            'method' => $method,
-            'email'  => Auth::user()->email ?? $r->input('email'),
+            'order'  => $order->load('items.producto'),
+            'method' => $order->paymentMethod,
+            'email'  => Auth::user()->email ?? $request->input('email'),
         ]);
 
         return $pdf->stream("Factura_{$order->referencia}.pdf");

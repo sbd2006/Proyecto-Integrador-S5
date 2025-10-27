@@ -78,7 +78,7 @@ Route::prefix('reportes')->name('reportes.')->group(function () {
     Route::get('ventas', [ReportController::class, 'ventasForm'])->name('ventas');
     // Generar PDF
     Route::get('ventas/pdf', [ReportController::class, 'ventasPdf'])->name('ventas.pdf');
-    
+
     Route::get('ventas/resumen', [ReportController::class, 'resumen'])->name('ventas.resumen');
 
     Route::get('ventas/resumen/pdf', [ReportController::class, 'resumenPdf'])->name('ventas.resumen.pdf');
@@ -127,17 +127,23 @@ Route::middleware('auth')->group(function () {
 
 // 🔒 Rutas del cliente autenticado (rol: user)
 Route::middleware(['auth', 'role:user'])->group(function () {
-    // Vista del cliente (Blade)
     Route::get('/mis-pedidos', [PedidoController::class, 'vistaPedidosCliente'])
         ->name('cliente.pedidos');
 
-    // Datos JSON que consume Axios en la vista
     Route::get('/mis-pedidos/json', [PedidoController::class, 'pedidosPorCliente'])
         ->name('cliente.pedidos.json');
+
+    Route::post('/checkout/pagar', [CheckoutController::class, 'pagar'])->name('checkout.pagar');
+
+    Route::get('/cliente/pedidos/{id}/pago', [PedidoController::class, 'mostrarPago'])
+        ->name('cliente.pedidos.checkout');
+
+    Route::post('/cliente/pedidos/{id}/cancelar', [PedidoController::class, 'cancelar'])
+        ->name('cliente.pedidos.cancelar');
 });
+
 
 Route::get('/mis-pedidos/cantidad', [PedidoController::class, 'contarPedidosCliente'])
     ->name('cliente.pedidos.cantidad');
 
 require __DIR__ . '/auth.php';
-
