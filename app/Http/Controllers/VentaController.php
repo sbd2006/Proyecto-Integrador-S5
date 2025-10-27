@@ -17,17 +17,22 @@ use Exception;
 
 class VentaController extends Controller
 {
-        public function index()
+    public function index()
     {
         // Mostrar todas las ventas con usuario y detalles
         $ventas = Venta::with(['usuario', 'detalles.producto'])->latest()->paginate(10);
         return view('admin.venta.index', compact('ventas'));
     }
 
-    public function show(Venta $venta)
+    public function show($id)
     {
-        $venta->load('detalles.producto', 'usuario');
-        return view('admin.ventas.show', compact('venta'));
+        $venta = Venta::with(['detalles.producto', 'usuario'])->find($id);
+
+        if (!$venta) {
+            abort(404, 'Venta no encontrada');
+        }
+
+        return view('admin.venta.show', compact('venta'));
     }
 
     public function store(Request $request)
@@ -70,7 +75,7 @@ class VentaController extends Controller
      */
     public function createQuick()
     {
-        $metodos = PaymentMethod::activos()->orderBy('nombre')->get(['id','nombre','slug']);
+        $metodos = PaymentMethod::activos()->orderBy('nombre')->get(['id', 'nombre', 'slug']);
         return view('ventas.rapida', compact('metodos'));
     }
 
@@ -80,11 +85,11 @@ class VentaController extends Controller
     public function storeQuick(Request $request)
     {
         $data = $request->validate([
-            'total' => ['required','numeric','min:0.01'],
-            'payment_method_id' => ['required', Rule::exists('payment_methods','id')],
-            'email' => ['nullable','email'],
-            'notas' => ['nullable','string','max:500'],
-        ],[
+            'total' => ['required', 'numeric', 'min:0.01'],
+            'payment_method_id' => ['required', Rule::exists('payment_methods', 'id')],
+            'email' => ['nullable', 'email'],
+            'notas' => ['nullable', 'string', 'max:500'],
+        ], [
             'total.min' => 'El total debe ser mayor a 0.',
         ]);
 
@@ -93,7 +98,7 @@ class VentaController extends Controller
             'total' => $data['total'],
             'payment_method_id' => $data['payment_method_id'],
             'status' => 'pagado',
-            'referencia' => 'POS-'.Str::upper(Str::random(8)),
+            'referencia' => 'POS-' . Str::upper(Str::random(8)),
             'notas' => $data['notas'] ?? null,
             'paid_at' => now(),
         ]);
@@ -118,12 +123,12 @@ class VentaController extends Controller
     public function finalizarDesdeCarrito(Request $request)
     {
         $data = $request->validate([
-            'payment_method_id' => ['required', Rule::exists('payment_methods','id')],
-            'notas' => ['nullable','string','max:500'],
-            'items' => ['required','array','min:1'],
-            'items.*.producto_id' => ['required','integer', Rule::exists('productos','id')],
-            'items.*.cantidad' => ['required','integer','min:1'],
-            'items.*.precio_unitario' => ['nullable','numeric','min:0'], // opcional
+            'payment_method_id' => ['required', Rule::exists('payment_methods', 'id')],
+            'notas' => ['nullable', 'string', 'max:500'],
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.producto_id' => ['required', 'integer', Rule::exists('productos', 'id')],
+            'items.*.cantidad' => ['required', 'integer', 'min:1'],
+            'items.*.precio_unitario' => ['nullable', 'numeric', 'min:0'], // opcional
         ]);
 
         try {
@@ -160,7 +165,7 @@ class VentaController extends Controller
                     'total'             => $total,
                     'payment_method_id' => $data['payment_method_id'],
                     'status'            => 'pagado',
-                    'referencia'        => 'POS-'.Str::upper(Str::random(8)),
+                    'referencia'        => 'POS-' . Str::upper(Str::random(8)),
                     'notas'             => $data['notas'] ?? null,
                     'paid_at'           => now(),
                 ]);
@@ -172,7 +177,6 @@ class VentaController extends Controller
 
                 return $order;
             });
-
         } catch (Exception $e) {
             // si el carrito llama vía AJAX/JSON
             if ($request->expectsJson()) {
@@ -198,7 +202,7 @@ class VentaController extends Controller
 
     public function factura(Order $order)
     {
-        $order->load(['paymentMethod','items.producto']);
+        $order->load(['paymentMethod', 'items.producto']);
         $pdf = Pdf::loadView('pdf.invoice', [
             'order' => $order,
             'method' => $order->paymentMethod,

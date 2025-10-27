@@ -81,11 +81,26 @@
         text-transform: capitalize;
     }
 
-    .estado.pendiente { background-color: #facc15; color: #4b1e2f; }
-    .estado.en_preparacion { background-color: #fb923c; }
-    .estado.listo { background-color: #22c55e; }
-    .estado.entregado { background-color: #16a34a; }
-    .estado.cancelado { background-color: #ef4444; }
+    .estado.pendiente {
+        background-color: #facc15;
+        color: #4b1e2f;
+    }
+
+    .estado.en_preparacion {
+        background-color: #fb923c;
+    }
+
+    .estado.listo {
+        background-color: #22c55e;
+    }
+
+    .estado.entregado {
+        background-color: #16a34a;
+    }
+
+    .estado.cancelado {
+        background-color: #ef4444;
+    }
 
     .pedido-detalles {
         color: #4b1e2f;
@@ -115,49 +130,92 @@
         color: #999;
         grid-column: 1 / -1;
     }
+
+    .pedido-acciones {
+        margin-top: 15px;
+        display: flex;
+        justify-content: space-around;
+        gap: 10px;
+    }
+
+    .btn-pagar,
+    .btn-cancelar {
+        border: none;
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 14px;
+    }
+
+    .btn-pagar {
+        background-color: #22c55e;
+        color: white;
+    }
+
+    .btn-pagar:hover {
+        background-color: #16a34a;
+    }
+
+    .btn-cancelar {
+        background-color: #ef4444;
+        color: white;
+    }
+
+    .btn-cancelar:hover {
+        background-color: #dc2626;
+    }
 </style>
 @endsection
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
+    axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
 
-function badgeEstado(estado) {
-    return `<span class="estado ${estado}">${estado.replace('_', ' ')}</span>`;
-}
+    function badgeEstado(estado) {
+        return `<span class="estado ${estado}">${estado.replace('_', ' ')}</span>`;
+    }
 
-async function cargarPedidos() {
-    try {
-        const res = await axios.get('{{ route("cliente.pedidos.json") }}');
-        const pedidos = res.data;
-        const cont = document.getElementById('lista-pedidos');
-        cont.innerHTML = '';
+    async function cargarPedidos() {
+        try {
+            const res = await axios.get('{{ route("cliente.pedidos.json") }}');
+            const pedidos = res.data;
+            const cont = document.getElementById('lista-pedidos');
+            cont.innerHTML = '';
 
-        if (!pedidos.length) {
-            cont.innerHTML = '<p class="mensaje-cargando">Aún no has realizado ningún pedido 🍰</p>';
-            return;
-        }
+            if (!pedidos.length) {
+                cont.innerHTML = '<p class="mensaje-cargando">Aún no has realizado ningún pedido 🍰</p>';
+                return;
+            }
 
-        pedidos.forEach(p => {
-            const card = document.createElement('div');
-            card.className = 'pedido-card';
+            pedidos.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'pedido-card';
 
-            const detalles = p.detalles.map(d => `
+                const puedePagar = p.estado === 'pendiente';
+                const puedeCancelar = p.estado === 'pendiente';
+
+
+                const detalles = p.detalles.map(d => `
                 <li>${d.producto.nombre} <strong>x${d.cantidad}</strong></li>
             `).join('');
 
-            const fecha = new Date(p.created_at);
-            const fechaFormateada = fecha.toLocaleDateString('es-ES', {
-                day: '2-digit', month: '2-digit', year: 'numeric'
-            });
-            const horaFormateada = fecha.toLocaleTimeString('es-ES', {
-                hour: '2-digit', minute: '2-digit'
-            });
+                const fecha = new Date(p.created_at);
+                const fechaFormateada = fecha.toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+                const horaFormateada = fecha.toLocaleTimeString('es-ES', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
 
-            card.innerHTML = `
+                card.innerHTML = `
                 <div class="pedido-header">
                     <h3>Pedido #${p.id}</h3>
                     ${badgeEstado(p.estado)}
@@ -166,17 +224,64 @@ async function cargarPedidos() {
                 <ul class="pedido-detalles">${detalles}</ul>
                 <p class="pedido-total">Total: $${parseFloat(p.total).toFixed(2)}</p>
                 <p class="pedido-fecha">📅 Fecha: ${fechaFormateada} — 🕒 ${horaFormateada}</p>
+
+                <div class="pedido-acciones">
+                    ${puedePagar ? `
+                        <button class="btn-pagar" onclick="pagarPedido(${p.id})">💳 Pagar</button>
+                    ` : `
+                        <button class="btn-pagar deshabilitado" disabled>💳 Pagado</button>
+                    `}
+
+                    ${puedeCancelar ? `
+                        <button class="btn-cancelar" onclick="cancelarPedido(${p.id})">❌ Cancelar</button>
+                    ` : `
+                        <button class="btn-cancelar deshabilitado" disabled>❌ No disponible</button>
+                    `}
+                </div>
             `;
 
-            cont.appendChild(card);
-        });
-    } catch (err) {
-        console.error('❌ Error cargando pedidos del cliente:', err);
-        document.getElementById('lista-pedidos').innerHTML =
-            '<p class="mensaje-cargando text-red-500">Error al cargar tus pedidos.</p>';
-    }
-}
 
-cargarPedidos();
+                cont.appendChild(card);
+            });
+        } catch (err) {
+            console.error('❌ Error cargando pedidos del cliente:', err);
+            document.getElementById('lista-pedidos').innerHTML =
+                '<p class="mensaje-cargando text-red-500">Error al cargar tus pedidos.</p>';
+        }
+    }
+
+    function pagarPedido(id) {
+        window.location.href = `/cliente/pedidos/${id}/pago`;
+    }
+
+    async function cancelarPedido(id) {
+        if (!confirm('¿Seguro que deseas cancelar este pedido?')) return;
+
+        const boton = document.querySelector(`button[onclick="cancelarPedido(${id})"]`);
+        boton.disabled = true;
+        boton.textContent = 'Cancelando...';
+
+        try {
+            const res = await axios.post(`/cliente/pedidos/${id}/cancelar`);
+            if (res.data.success) {
+                boton.textContent = 'Cancelado';
+                boton.classList.add('deshabilitado');
+                boton.style.backgroundColor = '#ccc';
+                cargarPedidos(); // 🔄 recargar la lista para ver el nuevo estado
+            } else {
+                alert('No se pudo cancelar el pedido.');
+            }
+        } catch (err) {
+            console.error('Error cancelando el pedido:', err);
+            alert('Ocurrió un error al cancelar el pedido.');
+            boton.disabled = false;
+            boton.textContent = '❌ Cancelar';
+        }
+    }
+
+
+
+
+    cargarPedidos();
 </script>
 @endsection
