@@ -89,11 +89,32 @@
         </form>
     </div>
 
-    {{-- ACCIONES --}}
+    {{-- ACCIONES (aquí movemos Categorías) --}}
     <div class="acciones">
         <a href="{{ route('producto.create') }}" class="btn">➕ Agregar Producto</a>
-        {{-- Deja este botón solo si tienes definida la ruta producto.pdf --}}
-        <a href="{{ route('producto.pdf') }}" class="btn" target="_blank">🧾 Generar PDF</a>
+
+        {{-- ✅ Crear categoría (probamos nombres de ruta comunes) --}}
+        @if (Route::has('categoria.create'))
+            <a href="{{ route('categoria.create') }}" class="btn">🏷️ Crear Categoría</a>
+        @elseif (Route::has('categorias.create'))
+            <a href="{{ route('categorias.create') }}" class="btn">🏷️ Crear Categoría</a>
+        @elseif (Route::has('category.create'))
+            <a href="{{ route('category.create') }}" class="btn">🏷️ Crear Categoría</a>
+        @endif
+
+        {{-- Opcional: acceso al listado de categorías --}}
+        @if (Route::has('categoria.index'))
+            <a href="{{ route('categoria.index') }}" class="btn">📚 Ver Categorías</a>
+        @elseif (Route::has('categorias.index'))
+            <a href="{{ route('categorias.index') }}" class="btn">📚 Ver Categorías</a>
+        @elseif (Route::has('category.index'))
+            <a href="{{ route('category.index') }}" class="btn">📚 Ver Categorías</a>
+        @endif
+
+        {{-- Solo si tienes definida la ruta del PDF --}}
+        @if (Route::has('producto.pdf'))
+            <a href="{{ route('producto.pdf') }}" class="btn" target="_blank">🧾 Generar PDF</a>
+        @endif
     </div>
 
     {{-- TABLA DE PRODUCTOS --}}
@@ -175,6 +196,5 @@
                 });
             });
         });
-    });
-</script>
+    </script>
 @endsection
