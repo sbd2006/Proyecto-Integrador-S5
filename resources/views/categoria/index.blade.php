@@ -1,11 +1,14 @@
 @extends('admin.dashboard')
 
-@section('titulomain', 'Categorías 🏷️')
+{{-- Título centrado (único) --}}
+@section('titulomain')
+  <div style="text-align:center;">Categorías 🏷️</div>
+@endsection
 
 @section('contenido')
     <style>
         .contenedor { max-width: 1000px; margin: 0 auto; background: #fff; border: 1px solid #d8a7b1; border-radius: 10px; padding: 20px; }
-        .topbar { display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+        .topbar { display: flex; gap: 10px; justify-content: flex-end; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
         .btn { display: inline-block; background: #a64d79; color: #fff; text-decoration: none; padding: 8px 12px; border-radius: 5px; }
         .btn:hover { background: #8b3f67; }
         .alert-success { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px; }
@@ -21,9 +24,16 @@
         .paginacion { text-align: center; margin-top: 20px; }
     </style>
 
+    @php
+        // Fallback por si tu ruta de productos usa plural
+        $prodIndexRoute = Route::has('producto.index') ? 'producto.index' : (Route::has('productos.index') ? 'productos.index' : null);
+    @endphp
+
     <div class="contenedor">
         <div class="topbar">
-            <h1 style="margin:0">Categorías</h1>
+            @if($prodIndexRoute)
+              <a href="{{ route($prodIndexRoute) }}" class="btn">↩️ Volver a mis Productos</a>
+            @endif
             <a href="{{ route('categoria.create') }}" class="btn">+ Nueva categoría</a>
         </div>
 
@@ -62,13 +72,7 @@
                             <td>#{{ $c->id }}</td>
                             <td>{{ $c->nombre }}</td>
                             <td>{{ $c->descripcion }}</td>
-                            <td>
-                                @if((string)$c->estado === '1')
-                                    <span>Activo</span>
-                                @else
-                                    <span>Inactivo</span>
-                                @endif
-                            </td>
+                            <td>{{ (string)$c->estado === '1' ? 'Activo' : 'Inactivo' }}</td>
                             <td>
                                 <div class="acciones-row">
                                     <a class="btn" href="{{ route('categoria.edit', ['categoria' => $c]) }}">✏️ Editar</a>
