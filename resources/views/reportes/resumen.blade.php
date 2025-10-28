@@ -1,4 +1,4 @@
-@extends('layout.dashboard')
+@extends('admin.dashboard  ')
 @section('titulomain') @endsection
 
 @section('reportes_content')
@@ -16,7 +16,7 @@
   @media (min-width:768px){ .grid-3{grid-template-columns:repeat(3,1fr);} }
 
   .label{display:block;font-weight:800;font-size:13px;margin-bottom:6px;color:#4b5563;text-transform:uppercase;letter-spacing:.02em;}
-  .input,.select{width:100%;border:1.6px solid var(--bd);padding:12px 14px;border-radius:12px;outline:none;background:#fff;transition:.15s;}
+  .input,.select{width:100%;border:1.6px solid var(--bd);padding:12px 1px;border-radius:12px;outline:none;background:#fff;transition:.15s;}
   .input:focus,.select:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(139,58,98,.15);}
 
   .actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
