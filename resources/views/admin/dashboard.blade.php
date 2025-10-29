@@ -14,7 +14,6 @@
             color: #4b1e2f;
             display: flex;
         }
-
         .sidebar {
             width: 250px;
             background-color: #a64d79;
@@ -25,7 +24,6 @@
             align-items: center;
             padding-top: 20px;
         }
-
         .logo {
             background: #d8a7b1;
             border-radius: 10px;
@@ -40,14 +38,12 @@
             margin-bottom: 20px;
             text-align: center;
         }
-
         .user {
             display: flex;
             flex-direction: column;
             align-items: center;
             margin-bottom: 20px;
         }
-
         .user img {
             width: 60px;
             height: 60px;
@@ -55,12 +51,7 @@
             margin-bottom: 8px;
             border: 2px solid #fff;
         }
-
-        .user-name {
-            font-weight: bold;
-            text-align: center;
-        }
-
+        .user-name { font-weight: bold; text-align: center; }
         .menu {
             width: 100%;
             display: flex;
@@ -68,7 +59,6 @@
             align-items: center;
             margin-top: 8px;
         }
-
         .menu a {
             width: 84%;
             padding: 10px;
@@ -83,11 +73,7 @@
             font-size: 15px;
             display: block;
         }
-
-        .menu a:hover {
-            background-color: #8b3f67;
-        }
-
+        .menu a:hover { background-color: #8b3f67; }
         .content {
             flex: 1;
             padding: 28px;
@@ -95,9 +81,7 @@
             overflow-y: auto;
             min-height: 100vh;
         }
-
         h1 { color: #a64d79; margin: 0 0 12px 0; }
-
         .logout {
             margin-top: auto;
             margin-bottom: 20px;
@@ -105,7 +89,6 @@
             display: flex;
             justify-content: center;
         }
-
         .logout button {
             background-color: #f25c77;
             color: white;
@@ -116,10 +99,7 @@
             cursor: pointer;
             font-weight: bold;
         }
-
-        .logout button:hover {
-            background-color: #d34b65;
-        }
+        .logout button:hover { background-color: #d34b65; }
     </style>
 </head>
 <body>
@@ -136,7 +116,6 @@
                         $isAdmin = false;
                         if(auth()->check()){
                             $user = auth()->user();
-                            // Soporte para campo rol o para hasRole()
                             if(isset($user->rol) && $user->rol === 'admin') $isAdmin = true;
                             elseif(method_exists($user, 'hasRole') && $user->hasRole('admin')) $isAdmin = true;
                         }
@@ -160,6 +139,11 @@
 
             <a href="{{ route('producto.index') }}">🍰 Productos</a>
             <a href="{{ route('venta.index') }}">🏷️ Ventas</a>
+
+           {{-- 📊 Reporte de ventas (admin) --}}
+@if(auth()->check() && $isAdmin && Route::has('reportes.ventas.resumen'))
+  <a href="{{ route('reportes.ventas.resumen') }}">📊 Reporte de ventas</a>
+@endif
 
         </div>
 
