@@ -1,16 +1,16 @@
 <div class="carrito-flotante">
     <h3>Carrito</h3>
 
-        @if (session()->has('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+    @if (session()->has('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
     @endif
 
     @if (session()->has('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
     @endif
 
     @forelse($productos as $item)
@@ -30,7 +30,7 @@
             </div>
 
             <p>Subtotal:</p>
-            <p>${{ number_format($item['producto']->precio * $item['cantidad'], 2) }}</p>
+            <p>${{ number_format($item['producto']->precio_venta * $item['cantidad'], 2) }}</p>
         </div>
         <button
             wire:click="eliminarProducto({{ $item['producto']->id }})" class="btn-quitarC">
@@ -38,15 +38,15 @@
         </button>
     </div>
     @empty
-    <center><p>No hay productos en el carrito</p></center>
+    <center>
+        <p>No hay productos en el carrito</p>
+    </center>
     @endforelse
 
     @if(count($productos) > 0)
     <p class="total">Total: ${{ number_format($totalVenta, 2) }}</p>
 
     <button wire:click="vaciarCarrito" class="btn-vaciar">Vaciar carrito</button>
-    <a href="{{ route('checkout') }}">
-        <button wire:click="finalizarCompra" class="btn-finalizar">Finalizar Compra</button>
-    </a>
+    <button wire:click="finalizarCompra" class="btn-finalizar">Finalizar Compra</button>
     @endif
 </div>

@@ -105,7 +105,10 @@
 <body>
 
     <div class="sidebar">
-        <div class="logo">🍰 Tienda<br><small style="font-size:12px;color:#4b1e2f">Postres María José</small></div>
+        <div class="logo">
+            🍰 Tienda<br>
+            <small style="font-size:12px;color:#4b1e2f">Postres María José</small>
+        </div>
 
         <div class="user">
             <img src="https://cdn-icons-png.flaticon.com/512/146/146005.png" alt="Usuario">
@@ -154,14 +157,30 @@
     </div>
 
     <div class="content">
-        <div class="titulo-nav">
-            <h1>@yield('titulomain')</h1>
-        </div>
+        {{-- ✅ Si la vista hija tiene contenido, se muestra; si no, se muestra el letrero de bienvenida --}}
+        @hasSection('contenido')
+            <div class="titulo-nav">
+                <h1>@yield('titulomain')</h1>
+            </div>
 
-        <div class="contenido">
-            @yield('contenido')
-        </div>
+            <div class="contenido">
+                @yield('contenido')
+            </div>
+        @else
+            <div class="bienvenida">
+                <img src="{{ asset('img/Logo.jpg') }}" alt="Logo Postres María José">
+                <h2>¡Bienvenido(a) a Postres María José! 💕</h2>
+                <p>
+                    Somos especialistas en los más irresistibles <strong>merengones artesanales</strong>, 
+                    preparados con frutas frescas, crema batida y ese toque dulce que enamora.  
+                    Cada creación es una explosión de sabor, color y alegría, perfecta para compartir y endulzar tus días.  
+                    Descubre por qué nuestros merengones son el corazón de Postres María José. 💖
+                </p>
+                <small>Postres María José — Endulzando tus momentos desde 2020 🍓</small>
+            </div>
+        @endif
     </div>
+
     @yield('scripts')
 </body>
 </html>

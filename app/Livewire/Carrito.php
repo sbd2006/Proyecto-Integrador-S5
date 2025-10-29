@@ -82,8 +82,8 @@ class Carrito extends Component
     {
         $this->totalVenta = 0;
         foreach ($this->productos as $item) {
-            if (isset($item['producto']->precio) && isset($item['cantidad'])) {
-                $this->totalVenta += $item['producto']->precio * $item['cantidad'];
+            if (isset($item['producto']->precio_venta) && isset($item['cantidad'])) {
+                $this->totalVenta += $item['producto']->precio_venta * $item['cantidad'];
             }
         }
     }
@@ -97,13 +97,14 @@ class Carrito extends Component
 
         // Crear el pedido principal
         $pedido = Pedido::create([
-            'cliente_id' => Auth::id(), // columna correcta en tu tabla
+            'cliente_id' => Auth::id(), // si también usas cliente_id
             'total' => $this->totalVenta,
             'estado' => 'pendiente',
-            'direccion_entrega' => 'Dirección de ejemplo', // Puedes reemplazar con un campo real o formulario
-            'metodo_pago' => 'efectivo', // o "tarjeta", según lo que manejes
-            'nota' => 'Sin observaciones', // o podrías dejarlo null
+            'direccion_entrega' => 'Dirección de ejemplo',
+            'metodo_pago' => 'efectivo',
+            'nota' => 'Sin observaciones',
         ]);
+
 
         // Crear los detalles del pedido
         foreach ($this->productos as $item) {
@@ -111,8 +112,9 @@ class Carrito extends Component
                 'pedido_id' => $pedido->id,
                 'producto_id' => $item['producto']->id,
                 'cantidad' => $item['cantidad'],
-                'precio_unitario' => $item['producto']->precio,
-                'subtotal' => $item['producto']->precio * $item['cantidad'],
+                'precio_unitario' => $item['producto']->precio_venta,
+                'subtotal' => $item['producto']->precio_venta * $item['cantidad'],
+
             ]);
         }
 
