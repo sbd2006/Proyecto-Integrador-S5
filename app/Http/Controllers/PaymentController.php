@@ -16,9 +16,18 @@ class PaymentController extends Controller
 {
     public function checkout()
     {
+        // Obtener los métodos de pago activos
         $metodos = PaymentMethod::activos()->orderBy('nombre')->get();
-        return view('checkout', compact('metodos'));
+
+        // Obtener el pedido pendiente del usuario
+        $pedido = Pedido::where('user_id', auth()->id())
+            ->where('estado', 'pendiente')
+            ->first();
+
+        // Enviar las variables a la vista
+        return view('checkout', compact('metodos', 'pedido'));
     }
+
 
     public function pagar(Request $request)
     {
