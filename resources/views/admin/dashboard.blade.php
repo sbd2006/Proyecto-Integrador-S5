@@ -120,12 +120,52 @@
         .logout button:hover {
             background-color: #d34b65;
         }
+
+        /* 🎀 SECCIÓN DE BIENVENIDA */
+        .bienvenida {
+            text-align: center;
+            background-color: #ffe5ef;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            box-shadow: 0 0 10px rgba(166, 77, 121, 0.2);
+        }
+
+        .bienvenida img {
+            width: 150px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        .bienvenida h2 {
+            color: #a64d79;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .bienvenida p {
+            font-size: 16px;
+            color: #5b2b43;
+            line-height: 1.6;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .bienvenida small {
+            display: block;
+            margin-top: 20px;
+            color: #8b3f67;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div class="logo">🍰 Tienda<br><small style="font-size:12px;color:#4b1e2f">Postres María José</small></div>
+        <div class="logo">
+            🍰 Tienda<br>
+            <small style="font-size:12px;color:#4b1e2f">Postres María José</small>
+        </div>
 
         <div class="user">
             <img src="https://cdn-icons-png.flaticon.com/512/146/146005.png" alt="Usuario">
@@ -136,7 +176,6 @@
                         $isAdmin = false;
                         if(auth()->check()){
                             $user = auth()->user();
-                            // Soporte para campo rol o para hasRole()
                             if(isset($user->rol) && $user->rol === 'admin') $isAdmin = true;
                             elseif(method_exists($user, 'hasRole') && $user->hasRole('admin')) $isAdmin = true;
                         }
@@ -170,14 +209,30 @@
     </div>
 
     <div class="content">
-        <div class="titulo-nav">
-            <h1>@yield('titulomain')</h1>
-        </div>
+        {{-- ✅ Si la vista hija tiene contenido, se muestra; si no, se muestra el letrero de bienvenida --}}
+        @hasSection('contenido')
+            <div class="titulo-nav">
+                <h1>@yield('titulomain')</h1>
+            </div>
 
-        <div class="contenido">
-            @yield('contenido')
-        </div>
+            <div class="contenido">
+                @yield('contenido')
+            </div>
+        @else
+            <div class="bienvenida">
+                <img src="{{ asset('img/Logo.jpg') }}" alt="Logo Postres María José">
+                <h2>¡Bienvenido(a) a Postres María José! 💕</h2>
+                <p>
+                    Somos especialistas en los más irresistibles <strong>merengones artesanales</strong>, 
+                    preparados con frutas frescas, crema batida y ese toque dulce que enamora.  
+                    Cada creación es una explosión de sabor, color y alegría, perfecta para compartir y endulzar tus días.  
+                    Descubre por qué nuestros merengones son el corazón de Postres María José. 💖
+                </p>
+                <small>Postres María José — Endulzando tus momentos desde 2020 🍓</small>
+            </div>
+        @endif
     </div>
+
     @yield('scripts')
 </body>
 </html>
