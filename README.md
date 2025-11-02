@@ -149,12 +149,5 @@ Route::resource('payment-methods', PaymentMethodController::class)
 - Eager loading en listados (`with(['user','paymentMethod'])`).
 
 ---
-## Módulo 12 · Troubleshooting
-- `>` en sidebar → carácter suelto tras `@endif` (corregido).
-- Overflow de tarjetas → envolver contenedor: `.resumen-card { overflow: clip; }`.
-- Reporte no carga → asegurar `@extends('admin.dashboard')` (sin espacios) y ruta `reportes.ventas.resumen`.
-- Catálogo 404 → crear `cliente/productos/index.blade.php` y su controlador.
-
----
 
 Hecho con 💖 para **Postres María José**.
