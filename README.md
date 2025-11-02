@@ -1,20 +1,6 @@
 # 🍰 Postres María José — README por Módulos
 
 Sistema en **Laravel** para gestionar **productos, categorías, pedidos/ventas** y **reportes** con exporte PDF.
-
----
-## ⚡️ Quickstart
-```bash
-git clone <repo>
-cd <repo>
-cp .env.example .env
-composer install
-php artisan key:generate
-php artisan storage:link
-php artisan migrate
-```
-Configura `.env` (DB y `APP_TIMEZONE=America/Bogota`). Crea un admin con Tinker y asígnale rol `admin` (Spatie) o `rol='admin'`.
-
 ---
 ## 🧭 Índice por módulos
 - [Módulo 1 · Catálogo Cliente](#módulo-1--catálogo-cliente)
