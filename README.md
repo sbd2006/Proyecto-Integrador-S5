@@ -1,61 +1,174 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🍰 Postres María José — README por Módulos
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema en **Laravel** para gestionar **productos, categorías, pedidos/ventas** y **reportes** con exporte PDF.
 
-## About Laravel
+---
+## ⚡️ Quickstart
+```bash
+git clone <repo>
+cd <repo>
+cp .env.example .env
+composer install
+php artisan key:generate
+php artisan storage:link
+php artisan migrate
+```
+Configura `.env` (DB y `APP_TIMEZONE=America/Bogota`). Crea un admin con Tinker y asígnale rol `admin` (Spatie) o `rol='admin'`.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
+## 🧭 Índice por módulos
+- [Módulo 1 · Catálogo Cliente](#módulo-1--catálogo-cliente)
+- [Módulo 2 · Productos (Admin)](#módulo-2--productos-admin)
+- [Módulo 3 · Categorías (Admin)](#módulo-3--categorías-admin)
+- [Módulo 4 · Pedidos (Admin)](#módulo-4--pedidos-admin)
+- [Módulo 5 · Reporte de Ventas (Admin)](#módulo-5--reporte-de-ventas-admin)
+- [Módulo 6 · Métodos de Pago](#módulo-6--métodos-de-pago)
+- [Módulo 7 · Stock (Servicio)](#módulo-7--stock-servicio)
+- [Módulo 8 · Unificación de Tablas](#módulo-8--unificación-de-tablas)
+- [Módulo 9 · Autenticación y Roles](#módulo-9--autenticación-y-roles)
+- [Módulo 10 · PDF](#módulo-10--pdf)
+- [Módulo 11 · Optimización](#módulo-11--optimización)
+- [Módulo 12 · Troubleshooting](#módulo-12--troubleshooting)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
+## Módulo 1 · Catálogo Cliente
+**Propósito:** Mostrar productos al cliente con filtros por **nombre**, **categoría** y **precio**.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Ruta**
+```
+GET /productos   (name: productos.index)
+```
+**Controlador sugerido**: `ProductoClienteController@index`
 
-## Learning Laravel
+**Vista**: `resources/views/cliente/productos/index.blade.php`
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Datos**: `Producto` con `categoria` (eager load). Paginación 12.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+**Validación**: `nombre`(string), `categoria`(int), `min/max`(numeric ≥0).
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
+## Módulo 2 · Productos (Admin)
+**Propósito:** CRUD + filtros y PDF.
 
-## Laravel Sponsors
+**Rutas**
+```
+GET /producto           (producto.index)
+GET /producto/create    (producto.create)
+POST /producto          (producto.store)
+GET /producto/{id}/edit (producto.edit)
+PUT /producto/{id}      (producto.update)
+DELETE /producto/{id}   (producto.destroy)
+```
+**Vistas**: `resources/views/admin/producto/*`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+**Notas**
+- Filtros: nombre, categoría, precio min/max, stock (con/sin).
+- Botón **“Crear categoría”** disponible desde Productos.
 
-### Premium Partners
+---
+## Módulo 3 · Categorías (Admin)
+**Propósito:** CRUD categorías.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+**Rutas**
+```
+GET /categoria          (categoria.index)
+GET /categoria/create   (categoria.create)
+POST /categoria         (categoria.store)
+GET /categoria/{id}/edit(categoria.edit)
+PUT /categoria/{id}     (categoria.update)
+DELETE /categoria/{id}  (categoria.destroy)
+```
+**Vista index**: título centrado, botones uniformes, link **↩️ Volver a mis Productos**.
 
-## Contributing
+---
+## Módulo 4 · Pedidos (Admin)
+**Propósito:** Gestión y monitoreo de pedidos.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**Ruta**
+```
+GET /admin/pedidos   (admin.pedidos)
+```
+**Filtros**: fecha (desde/hasta o por día), `status`, `payment_method_id`.
 
-## Code of Conduct
+**KPIs**: finalizadas / canceladas (controlador debe pasar `$finished`, `$canceled`).
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**UI**: tabla paginada; chips de filtros activos.
 
-## Security Vulnerabilities
+---
+## Módulo 5 · Reporte de Ventas (Admin)
+**Propósito:** KPIs y tablas de ventas + PDF.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Ruta**
+```
+GET /reportes/ventas        (reportes.ventas.resumen)
+GET /reportes/ventas/pdf    (reportes.ventas.resumen.pdf)
+```
+**Vista**: `resources/views/admin/reportes/ventas/resumen.blade.php`
 
-## License
+**Incluye**: KPIs (Ingresos, Órdenes, Ticket), **por método de pago**, **ventas por día**, **top productos**.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**UX**: chips rápidos (Hoy/Mes/Año), botón **PDF** con mismos filtros.
+
+---
+## Módulo 6 · Métodos de Pago
+**Propósito:** CRUD básico de métodos de pago.
+
+**Rutas** (recomendadas)
+```
+Route::resource('payment-methods', PaymentMethodController::class)
+      ->names('payment_methods');
+```
+**Uso en filtros/reportes** vía `payment_method_id`.
+
+---
+## Módulo 7 · Stock (Servicio)
+**Propósito:** Descontar stock al crear venta y restaurar al cancelar, de forma **atómica**.
+
+**Servicio**: `app/Services/ProcesarVenta.php`
+- `ejecutar(items, meta)` → crea `Order` + `OrderItems` y **descuenta** (`lockForUpdate()`).
+- `restaurarStock(Order)` → **repone** en cancelación.
+
+**Integración**: `PaymentController@pagar`, `VentaController@store`.
+
+---
+## Módulo 8 · Unificación de Tablas
+**Objetivo:** pasar de 4 tablas (`orders/order_items` + `pedidos/pedido_detalles`) a **2** (`orders/order_items`).
+
+**Pasos**
+1. Extiende `orders`: `shipping_address`, `payment_method_text`, `legacy_pedido_id`.
+2. **Volcado**: `pedidos → orders` y `pedido_detalles → order_items` con `INSERT…SELECT`.
+3. **Mapeo**: tabla `map_pedido_order(pedido_id, order_id)` para enlazar detalles.
+4. **Redirige FKs** que apunten a `pedidos` ⇒ `orders` (añade `order_id`, backfill, crea FK nueva, elimina FK/columna vieja).
+5. **Freeze**: renombra legacy a `*_legacy` (opcional: crear **VIEW** de solo lectura).
+
+> Si prefieres conservar `pedidos/pedido_detalles`, aplica el proceso inverso.
+
+---
+## Módulo 9 · Autenticación y Roles
+- Usa **Spatie** (`hasRole('admin')`) o campo `rol` como fallback.
+- Sidebar muestra ítems admin (Pedidos, Reporte) sólo si `admin`.
+- Protege rutas admin con `->middleware(['auth','role:admin'])`.
+
+---
+## Módulo 10 · PDF
+- Paquete: `barryvdh/laravel-dompdf`.
+- Mantén plantillas simples; si usas tildes/ñ, utiliza fuente compatible (p.ej., DejaVu Sans).
+
+---
+## Módulo 11 · Optimización
+- Índices sugeridos:
+  - `orders(status, created_at, paid_at, payment_method_id)`
+  - `order_items(order_id, producto_id)`
+  - `productos(categoria_id, nombre, precio_venta)`
+- Eager loading en listados (`with(['user','paymentMethod'])`).
+
+---
+## Módulo 12 · Troubleshooting
+- `>` en sidebar → carácter suelto tras `@endif` (corregido).
+- Overflow de tarjetas → envolver contenedor: `.resumen-card { overflow: clip; }`.
+- Reporte no carga → asegurar `@extends('admin.dashboard')` (sin espacios) y ruta `reportes.ventas.resumen`.
+- Catálogo 404 → crear `cliente/productos/index.blade.php` y su controlador.
+
+---
+
+Hecho con 💖 para **Postres María José**.
