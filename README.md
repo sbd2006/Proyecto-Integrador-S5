@@ -1,4 +1,4 @@
-# 🍰 Postres María José — README por Módulos
+# 🍰 Postres María José 
 
 Sistema en **Laravel** para gestionar **productos, categorías, pedidos/ventas** y **reportes** con exporte PDF.
 ---
