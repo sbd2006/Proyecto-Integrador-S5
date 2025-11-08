@@ -52,38 +52,50 @@ public function pagar(Request $request)
                 'total'   => $validated['total'],
                 'estado'  => 'pagado',
             ]);
+        }
+    // ✅ Crear los detalles de la venta y descontar stock
+    foreach ($pedido->detalles as $detalle) {
+        $producto = \App\Models\Producto::lockForUpdate()->find($detalle->producto_id);
 
-            // ✅ Crear los detalles de la venta y descontar stock
-            foreach ($pedido->detalles as $detalle) {
-                $producto = \App\Models\Producto::lockForUpdate()->find($detalle->producto_id);
+        if (!$producto) {
+            throw new Exception("El producto con ID {$detalle->producto_id} no existe.");
+        }
 
-                if (!$producto) {
-                    throw new Exception("El producto con ID {$detalle->producto_id} no existe.");
-                }
+        // Descontar stock
+        $producto->decrement('stock', $detalle->cantidad);
 
-                // Descontar stock
-                $producto->decrement('stock', $detalle->cantidad);
+        // Registrar detalle de venta
+        DetalleVenta::create([
+            'venta_id'    => $venta->id,
+            'producto_id' => $detalle->producto_id,
+            'cantidad'    => $detalle->cantidad,
+            'precio'      => $detalle->precio_unitario,
+        ]);
+    }
 
-                // Registrar detalle de venta
-                DetalleVenta::create([
-                    'venta_id'    => $venta->id,
-                    'producto_id' => $detalle->producto_id,
-                    'cantidad'    => $detalle->cantidad,
-                    'precio'      => $detalle->precio_unitario,
-                ]);
-            }
+    // ✅ Cambiar estado del pedido (puedes ajustarlo a 'pagado' o 'entregado' según tu flujo)
+    $pedido->update(['estado' => 'pagado']);
 
-            // ✅ Cambiar estado del pedido
-            $pedido->update(['estado' => 'entregado']);
+    // ✅ Crear la orden (para generar factura)
+    $order = Order::create([
+        'user_id'           => Auth::id(),
+        'total'             => $validated['total'],
+        'payment_method_id' => $validated['payment_method_id'],
+        'status'            => 'pagado',
+        'referencia'        => 'ORD-' . strtoupper(Str::random(8)),
+        'notas'             => $validated['notas'] ?? null,
+    ]);
 
-            // ✅ Crear la orden (para generar factura)
-            $order = Order::create([
-                'user_id'           => Auth::id(),
-                'total'             => $validated['total'],
-                'payment_method_id' => $validated['payment_method_id'],
-                'status'            => 'pagado',
-                'referencia'        => 'ORD-' . strtoupper(Str::random(8)),
-                'notas'             => $validated['notas'] ?? null,
+    // ✅ Agregar productos desde el pedido a la orden
+    foreach ($pedido->detalles as $detalle) {
+        $order->items()->create([
+            'producto_id'     => $detalle->producto_id,
+            'cantidad'        => $detalle->cantidad,
+            'precio_unitario' => $detalle->precio_unitario,
+            'subtotal'        => $detalle->subtotal,
+        ]);
+    }
+
             ]);
 
             foreach ($pedido->detalles as $detalle) {

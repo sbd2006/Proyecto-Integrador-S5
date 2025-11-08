@@ -81,6 +81,11 @@
         text-transform: capitalize;
     }
 
+    .estado.pagado {
+        background-color: #22c55e;
+    }
+
+
     .estado.pendiente {
         background-color: #facc15;
         color: #4b1e2f;

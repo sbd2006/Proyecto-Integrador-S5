@@ -34,33 +34,51 @@ class VentaController extends Controller
 
         return view('admin.venta.show', compact('venta'));
     }
-
     public function store(Request $request)
     {
-        // Supongamos que el carrito viene del session o request
-        $carrito = session('carrito', []);
-        $total = collect($carrito)->sum(fn($item) => $item['precio'] * $item['cantidad']);
+        DB::beginTransaction(); // ✅ Transacción por seguridad
 
-        // 1️⃣ Crear la venta
-        $venta = Venta::create([
-            'user_id' => auth()->id(),
-            'total' => $total,
-        ]);
-
-        // 2️⃣ Crear el detalle de la venta
-        foreach ($carrito as $item) {
-            DetalleVenta::create([
-                'venta_id' => $venta->id,
-                'producto_id' => $item['producto_id'],
-                'cantidad' => $item['cantidad'],
-                'precio' => $item['precio'],
+        try {
+            // 1️⃣ Crear la venta
+            $venta = Venta::create([
+                'user_id' => auth()->id(),
+                'total'   => $request->total,
+                'estado'  => 'pagado',
+                'fecha'   => now(),
             ]);
+
+            // 2️⃣ Recorrer los productos del carrito / pedido
+            foreach ($request->productos as $item) {
+                // Ejemplo: $item = ['producto_id' => 5, 'cantidad' => 2, 'precio' => 10000]
+
+                // Crear el detalle de la venta
+                DetalleVenta::create([
+                    'venta_id'    => $venta->id,
+                    'producto_id' => $item['producto_id'],
+                    'cantidad'    => $item['cantidad'],
+                    'precio'      => $item['precio'],
+                    'subtotal'    => $item['cantidad'] * $item['precio'],
+                ]);
+
+                // 3️⃣ Restar stock del producto
+                $producto = Producto::find($item['producto_id']);
+                if ($producto) {
+                    // Verificar que haya suficiente stock
+                    if ($producto->stock < $item['cantidad']) {
+                        throw new \Exception("Stock insuficiente para el producto: {$producto->nombre}");
+                    }
+
+                    $producto->decrement('stock', $item['cantidad']);
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('admin.ventas.index')
+                ->with('success', 'Venta registrada y stock actualizado.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors('Error al registrar la venta: ' . $e->getMessage());
         }
-
-        // 3️⃣ Vaciar carrito o redirigir
-        session()->forget('carrito');
-
-        return redirect()->route('venta.index')->with('success', 'Venta registrada correctamente');
     }
 
     public function cambiarEstado(Request $request, Venta $venta)
