@@ -100,6 +100,43 @@
             font-weight: bold;
         }
         .logout button:hover { background-color: #d34b65; }
+
+         /* 🎀 SECCIÓN DE BIENVENIDA */
+        .bienvenida {
+            text-align: center;
+            background-color: #ffe5ef;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            box-shadow: 0 0 10px rgba(166, 77, 121, 0.2);
+        }
+
+        .bienvenida img {
+            width: 150px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        .bienvenida h2 {
+            color: #a64d79;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .bienvenida p {
+            font-size: 16px;
+            color: #5b2b43;
+            line-height: 1.6;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .bienvenida small {
+            display: block;
+            margin-top: 20px;
+            color: #8b3f67;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -143,10 +180,10 @@
             <a href="{{ route('producto.index') }}">🍰 Productos</a>
             <a href="{{ route('venta.index') }}">🏷️ Ventas</a>
 
-           {{-- 📊 Reporte de ventas (admin) --}}
-@if(auth()->check() && $isAdmin && Route::has('reportes.ventas.resumen'))
-  <a href="{{ route('reportes.ventas.resumen') }}">📊 Reporte de ventas</a>
-@endif
+                {{-- 📊 Reporte de ventas (admin) --}}
+        @if(auth()->check() && $isAdmin && Route::has('reportes.ventas.resumen'))
+        <a href="{{ route('reportes.ventas.resumen') }}">📊 Reporte de ventas</a>
+        @endif
 
         </div>
 

@@ -37,35 +37,70 @@ class CatalogoProductos extends Component
         }
     }
 
-    public function addToCart($productoId)
-    {
-        $producto = Producto::find($productoId);
+public function addToCart($productoId)
+{
+    $producto = Producto::find($productoId);
 
-        $cart = Session::get('cart', []);
-        if (isset($cart[$productoId])) {
-            $cart[$productoId]['cantidad']++;
-        } else {
-            $cart[$productoId] = [
-                'producto' => $producto,
-                'cantidad' => 1
-            ];
+    if (!$producto) {
+        session()->flash('error', 'El producto no existe.');
+        return;
+    }
+
+    if ($producto->stock <= 0) {
+        session()->flash('error', 'El producto "' . $producto->nombre . '" no tiene stock disponible.');
+        return;
+    }
+
+    $cart = Session::get('cart', []);
+
+    // Si ya está en el carrito
+    if (isset($cart[$productoId])) {
+        $nuevaCantidad = $cart[$productoId]['cantidad'] + 1;
+
+        if ($nuevaCantidad > $producto->stock) {
+            session()->flash('error', 'Solo quedan ' . $producto->stock . ' unidades de "' . $producto->nombre . '".');
+            return;
         }
 
+        $cart[$productoId]['cantidad'] = $nuevaCantidad;
+    } else {
+        $cart[$productoId] = [
+            'producto' => $producto,
+            'cantidad' => 1
+        ];
+    }
+
+    Session::put('cart', $cart);
+    $this->actualizarCantidades();
+    $this->dispatch('productoAgregado');
+    session()->flash('success', 'Producto agregado al carrito.');
+}
+
+public function incrementarCantidad($productoId)
+{
+    $cart = Session::get('cart', []);
+    $producto = Producto::find($productoId);
+
+    if (!$producto) {
+        session()->flash('error', 'El producto no existe.');
+        return;
+    }
+
+    if (isset($cart[$productoId])) {
+        $nuevaCantidad = $cart[$productoId]['cantidad'] + 1;
+
+        if ($nuevaCantidad > $producto->stock) {
+            session()->flash('error', 'No hay suficiente stock para "' . $producto->nombre . '". Stock disponible: ' . $producto->stock);
+            return;
+        }
+
+        $cart[$productoId]['cantidad'] = $nuevaCantidad;
         Session::put('cart', $cart);
         $this->actualizarCantidades();
         $this->dispatch('productoAgregado');
     }
+}
 
-    public function incrementarCantidad($productoId)
-    {
-        $cart = Session::get('cart', []);
-        if (isset($cart[$productoId])) {
-            $cart[$productoId]['cantidad']++;
-            Session::put('cart', $cart);
-        }
-        $this->actualizarCantidades();
-        $this->dispatch('productoAgregado');
-    }
 
     public function decrementarCantidad($productoId)
     {
