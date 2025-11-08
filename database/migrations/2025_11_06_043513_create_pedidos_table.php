@@ -22,7 +22,6 @@ return new class extends Migration {
             $table->string('metodo_pago')->nullable();
             $table->text('nota')->nullable();
             $table->timestamps();
-            $table->unsignedBigInteger('user_id'); // tal cual está en tu BD (sin FK)
 
             $table->foreign('cliente_id')
                 ->references('id')->on('users')

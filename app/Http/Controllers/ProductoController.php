@@ -51,6 +51,13 @@ class ProductoController extends Controller
 
     // 👇 Si el usuario es USER → muestra la vista de usuario
     return view('user.productos', compact('productos'));
+
+    if (auth()->user()->hasRole('admin')) {
+    return view('producto.index', compact('productos', 'categorias'));
+}
+
+return view('user.productos', compact('productos'));
+
 }
 
 
