@@ -166,8 +166,9 @@ class PedidoController extends Controller
     public function actualizarEstado(Request $request, $id)
     {
         $request->validate([
-            'estado' => 'required|in:pendiente,en_preparacion,listo,entregado,cancelado'
+            'estado' => 'required|in:pendiente,en_preparacion,listo,entregado,cancelado,pagado'
         ]);
+
 
         $pedido = Pedido::findOrFail($id);
         $pedido->estado = $request->estado;

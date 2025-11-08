@@ -61,7 +61,7 @@ class PaymentController extends Controller
         }
 
         // ✅ Cambiar estado del pedido
-        $pedido->update(['estado' => 'entregado']);
+        $pedido->update(['estado' => 'pagado']);
 
         // ✅ Crear la orden (para generar factura)
         $order = Order::create([
