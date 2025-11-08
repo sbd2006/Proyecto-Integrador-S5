@@ -88,7 +88,7 @@
                     <ul class="ulList">
                         <a href="{{ url('/') }}">Inicio</a>
                         <a href="{{ url('/#productos') }}">Productos</a>
-                        <a href="{{ url('/#about-us') }}">About Us</a>
+                        <a href="{{ url('/#about-us') }}">Nosotros</a>
 
                         @guest
                         <a href="{{ route('login') }}" class="btn btn-outline-light">Iniciar Sesión</a>

@@ -254,5 +254,89 @@
       <button type="submit" class="bttn">Simular pago</button>
     </div>
   </form>
+  <!-- ✅ Popup flotante mejorado -->
+<div id="popup" style="
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.5);
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+">
+  <div id="popupBox" style="
+    background:#fff;
+    padding:30px;
+    border-radius:12px;
+    text-align:center;
+    max-width:320px;
+    transform:scale(0.8);
+    opacity:0;
+    transition:all 0.25s ease;
+  ">
+    <h2 style="color:green; margin-bottom:8px;">✅ Pago exitoso</h2>
+    <p>Tu pago se ha procesado correctamente.</p>
+    <button id="cerrarPopup" style="
+      margin-top:14px;
+      background:#a64d79;
+      color:#fff;
+      border:none;
+      padding:8px 14px;
+      border-radius:8px;
+      cursor:pointer;
+    ">Cerrar</button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('form[action="{{ route('checkout.pagar') }}"]');
+  const popup = document.getElementById('popup');
+  const popupBox = document.getElementById('popupBox');
+  const cerrarBtn = document.getElementById('cerrarPopup');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const nuevaPestana = window.open('', '_blank'); // prevenir bloqueo
+
+    fetch(form.action, {
+      method: 'POST',
+      headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+      body: formData
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Error en el pago');
+      return res.blob();
+    })
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      nuevaPestana.location.href = url;
+
+      // Mostrar popup con animación
+      popup.style.display = 'flex';
+      setTimeout(() => {
+        popupBox.style.transform = 'scale(1)';
+        popupBox.style.opacity = '1';
+      }, 50);
+    })
+    .catch(() => {
+      nuevaPestana.close();
+      alert('Ocurrió un error al procesar el pago.');
+    });
+  });
+
+  cerrarBtn.addEventListener('click', () => {
+    popupBox.style.transform = 'scale(0.8)';
+    popupBox.style.opacity = '0';
+    setTimeout(() => {
+      popup.style.display = 'none';
+      window.location.href = "{{ url('/') }}"; // tu landing page
+    }, 200);
+  });
+});
+</script>
 </div>
 @endsection

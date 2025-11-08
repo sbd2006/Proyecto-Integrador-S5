@@ -23,15 +23,29 @@ class Carrito extends Component
     }
 
     public function incrementarCantidad($id)
-    {
-        $cart = Session::get('cart', []);
+{
+    $cart = Session::get('cart', []);
+    $producto = \App\Models\Producto::find($id);
 
-        if (isset($cart[$id])) {
-            $cart[$id]['cantidad']++;
-            Session::put('cart', $cart);
-            $this->dispatch('productoAgregado'); // actualiza el contador en el icono
-        }
+    if (!$producto) {
+        session()->flash('error', 'El producto no existe.');
+        return;
     }
+
+    if (isset($cart[$id])) {
+        $nuevaCantidad = $cart[$id]['cantidad'] + 1;
+
+        if ($nuevaCantidad > $producto->stock) {
+            session()->flash('error', 'No hay suficiente stock para "' . $producto->nombre . '". Solo quedan ' . $producto->stock . ' unidades.');
+            return;
+        }
+
+        $cart[$id]['cantidad'] = $nuevaCantidad;
+        Session::put('cart', $cart);
+        $this->dispatch('productoAgregado');
+    }
+}
+
 
     public function disminuirCantidad($id)
     {
