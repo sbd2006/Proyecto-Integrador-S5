@@ -136,11 +136,17 @@ Route::middleware(['auth', 'role:user'])->group(function () {
         ->name('cliente.pedidos.cancelar');
 });
 
-Route::post('/cliente/pedidos/{id}/pagar', [PedidoController::class, 'pagar'])
-    ->name('cliente.pedidos.pagar');
+/*
+// 🔹 Ruta temporal para evitar error de "categoria.index"
+Route::get('/categoria', function () {
+    return 'Página de categorías (temporal)';
+})->name('categoria.index');
 
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('producto', ProductoController::class);
+});
 
-
+*/
 Route::get('/mis-pedidos/cantidad', [PedidoController::class, 'contarPedidosCliente'])
     ->name('cliente.pedidos.cantidad');
 
