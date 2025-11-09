@@ -65,17 +65,21 @@ class PaymentController extends Controller
                     ]);
                 }
 
-                // ✅ Estado correcto del pedido
-                $pedido->update(['estado' => 'pagado']);
+            }
 
-                $order = Order::create([
-                    'user_id'           => Auth::id(),
-                    'total'             => $validated['total'],
-                    'payment_method_id' => $validated['payment_method_id'],
-                    'status'            => 'pagado',
-                    'referencia'        => 'ORD-' . strtoupper(Str::random(8)),
-                    'notas'             => $validated['notas'] ?? null,
-                ]);
+            // ✅ Cambiar estado del pedido
+            $pedido->update(['estado' => 'pagado']);
+
+            // ✅ Crear la orden (para generar factura)
+            $order = Order::create([
+                'user_id'           => Auth::id(),
+                'total'             => $validated['total'],
+                'payment_method_id' => $validated['payment_method_id'],
+                'status'            => 'pagado',
+                'referencia'        => 'ORD-' . strtoupper(Str::random(8)),
+                'notas'             => $validated['notas'] ?? null,
+            ]);
+
 
                 foreach ($pedido->detalles as $detalle) {
                     $order->items()->create([
