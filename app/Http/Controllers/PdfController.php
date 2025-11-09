@@ -14,7 +14,7 @@ class PdfController extends Controller
 
         // Filtro por categoría
         if ($request->filled('categoria')) {
-            $query->where('id_categoria', $request->categoria);
+            $query->where('categoria_id', $request->categoria);
         }
 
         // Filtro por stock
