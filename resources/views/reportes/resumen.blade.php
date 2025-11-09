@@ -70,9 +70,6 @@
           @php $sel = old('status', data_get($filters,'status', data_get($filters,'estado','todos'))); @endphp
           <select id="status" name="status" class="select">
             <option value="todos"     {{ $sel==='todos'?'selected':'' }}>Todos</option>
-            <option value="pagado"    {{ $sel==='pagado'?'selected':'' }}>Pagado</option>
-            <option value="pendiente" {{ $sel==='pendiente'?'selected':'' }}>Pendiente</option>
-            <option value="cancelado" {{ $sel==='cancelado'?'selected':'' }}>Cancelado</option>
           </select>
         </div>
 

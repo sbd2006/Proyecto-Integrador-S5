@@ -291,7 +291,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const form = document.querySelector('form[action="{{ route('checkout.pagar') }}"]');
+  const form = document.getElementById('formPago'); // ✅ más seguro
   const popup = document.getElementById('popup');
   const popupBox = document.getElementById('popupBox');
   const cerrarBtn = document.getElementById('cerrarPopup');
