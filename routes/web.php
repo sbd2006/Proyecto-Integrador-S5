@@ -116,10 +116,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/pedidos', [PedidoController::class, 'store'])
         ->name('pedidos.store');
 
-    // 👤 El cliente ve solo sus pedidos
-    Route::get('/mis-pedidos/json', [PedidoController::class, 'pedidosPorCliente'])
-        ->name('mis.pedidos.json');
-
     // 🔄 Cambiar el estado del pedido (lo usa el admin)
     Route::patch('/pedidos/{id}/estado', [PedidoController::class, 'actualizarEstado'])
         ->name('pedidos.actualizar');
@@ -133,8 +129,6 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/mis-pedidos/json', [PedidoController::class, 'pedidosPorCliente'])
         ->name('cliente.pedidos.json');
 
-    Route::post('/checkout/pagar', [CheckoutController::class, 'pagar'])->name('checkout.pagar');
-
     Route::get('/cliente/pedidos/{id}/pago', [PedidoController::class, 'mostrarPago'])
         ->name('cliente.pedidos.checkout');
 
@@ -142,7 +136,17 @@ Route::middleware(['auth', 'role:user'])->group(function () {
         ->name('cliente.pedidos.cancelar');
 });
 
+/*
+// 🔹 Ruta temporal para evitar error de "categoria.index"
+Route::get('/categoria', function () {
+    return 'Página de categorías (temporal)';
+})->name('categoria.index');
 
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('producto', ProductoController::class);
+});
+
+*/
 Route::get('/mis-pedidos/cantidad', [PedidoController::class, 'contarPedidosCliente'])
     ->name('cliente.pedidos.cantidad');
 

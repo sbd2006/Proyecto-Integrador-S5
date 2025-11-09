@@ -46,13 +46,13 @@
         border: 1px solid #f3c3d4;
         border-radius: 12px;
         padding: 18px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         transition: all 0.3s ease;
     }
 
     .pedido-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
     }
 
     .pedido-header {
@@ -77,11 +77,31 @@
         text-transform: capitalize;
     }
 
-    .estado.pendiente { background-color: #facc15; color: #4b1e2f; }
-    .estado.en_preparacion { background-color: #fb923c; }
-    .estado.listo { background-color: #22c55e; }
-    .estado.entregado { background-color: #16a34a; }
-    .estado.cancelado { background-color: #ef4444; }
+    .estado.pagado {
+        background-color: #22c55e;
+    }
+
+
+    .estado.pendiente {
+        background-color: #facc15;
+        color: #4b1e2f;
+    }
+
+    .estado.en_preparacion {
+        background-color: #fb923c;
+    }
+
+    .estado.listo {
+        background-color: #22c55e;
+    }
+
+    .estado.entregado {
+        background-color: #16a34a;
+    }
+
+    .estado.cancelado {
+        background-color: #ef4444;
+    }
 
     .pedido-info p {
         margin: 4px 0;
@@ -124,12 +144,30 @@
         transition: 0.2s;
     }
 
-    .acciones button:hover { opacity: 0.9; }
+    .acciones button:hover {
+        opacity: 0.9;
+    }
 
-    .btn-preparar { background-color: #3b82f6; }
-    .btn-listo { background-color: #22c55e; }
-    .btn-entregado { background-color: #059669; }
-    .btn-cancelar { background-color: #ef4444; }
+    .btn-pagado {
+        background-color: #10b981;
+    }
+
+
+    .btn-preparar {
+        background-color: #3b82f6;
+    }
+
+    .btn-listo {
+        background-color: #22c55e;
+    }
+
+    .btn-entregado {
+        background-color: #059669;
+    }
+
+    .btn-cancelar {
+        background-color: #ef4444;
+    }
 
     .mensaje-cargando {
         text-align: center;
@@ -142,31 +180,31 @@
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').content;
+    axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').content;
 
-function renderEstadoBadge(estado) {
-    return `<span class="estado ${estado}">${estado.replace('_', ' ')}</span>`;
-}
+    function renderEstadoBadge(estado) {
+        return `<span class="estado ${estado}">${estado.replace('_', ' ')}</span>`;
+    }
 
-async function cargarPedidos() {
-    try {
-        const res = await axios.get('{{ route("pedidos.json") }}');
-        const pedidos = res.data;
-        const cont = document.getElementById('lista-pedidos');
-        cont.innerHTML = '';
+    async function cargarPedidos() {
+        try {
+            const res = await axios.get('{{ route("pedidos.json") }}');
+            const pedidos = res.data;
+            const cont = document.getElementById('lista-pedidos');
+            cont.innerHTML = '';
 
-        if (!pedidos.length) {
-            cont.innerHTML = '<p class="mensaje-cargando">No hay pedidos registrados.</p>';
-            return;
-        }
+            if (!pedidos.length) {
+                cont.innerHTML = '<p class="mensaje-cargando">No hay pedidos registrados.</p>';
+                return;
+            }
 
-        pedidos.forEach(p => {
-            const card = document.createElement('div');
-            card.className = 'pedido-card';
-            const detalles = p.detalles.map(d => `<li>${d.producto.nombre} <strong>x${d.cantidad}</strong></li>`).join('');
+            pedidos.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'pedido-card';
+                const detalles = p.detalles.map(d => `<li>${d.producto.nombre} <strong>x${d.cantidad}</strong></li>`).join('');
 
-            card.innerHTML = `
+                card.innerHTML = `
                 <div class="pedido-header">
                     <h3>Pedido #${p.id}</h3>
                     ${renderEstadoBadge(p.estado)}
@@ -178,31 +216,34 @@ async function cargarPedidos() {
                 <div class="pedido-total">Total: $${parseFloat(p.total).toFixed(2)}</div>
 
                 <div class="acciones">
+                    <button onclick="cambiarEstado(${p.id}, 'pagado')" class="btn-pagado">💰 Pagado</button>
                     <button onclick="cambiarEstado(${p.id}, 'en_preparacion')" class="btn-preparar">🧑‍🍳 Preparar</button>
                     <button onclick="cambiarEstado(${p.id}, 'listo')" class="btn-listo">✅ Listo</button>
                     <button onclick="cambiarEstado(${p.id}, 'entregado')" class="btn-entregado">📦 Entregado</button>
                     <button onclick="cambiarEstado(${p.id}, 'cancelado')" class="btn-cancelar">❌ Cancelar</button>
                 </div>
             `;
-            cont.appendChild(card);
-        });
-    } catch (err) {
-        console.error('Error cargando pedidos:', err);
-        document.getElementById('lista-pedidos').innerHTML = 
-            '<p class="mensaje-cargando text-red-500">Error al cargar los pedidos.</p>';
+                cont.appendChild(card);
+            });
+        } catch (err) {
+            console.error('Error cargando pedidos:', err);
+            document.getElementById('lista-pedidos').innerHTML =
+                '<p class="mensaje-cargando text-red-500">Error al cargar los pedidos.</p>';
+        }
     }
-}
 
-async function cambiarEstado(id, estado) {
-    try {
-        await axios.patch(`/pedidos/${id}/estado`, { estado });
-        cargarPedidos();
-    } catch (err) {
-        console.error('Error actualizando estado', err);
+    async function cambiarEstado(id, estado) {
+        try {
+            await axios.patch(`/pedidos/${id}/estado`, {
+                estado
+            });
+            cargarPedidos();
+        } catch (err) {
+            console.error('Error actualizando estado', err);
+        }
     }
-}
 
-cargarPedidos();
-setInterval(cargarPedidos, 5000);
+    cargarPedidos();
+    setInterval(cargarPedidos, 5000);
 </script>
 @endsection
