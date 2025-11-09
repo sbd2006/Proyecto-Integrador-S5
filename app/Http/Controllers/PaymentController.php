@@ -18,21 +18,17 @@ class PaymentController extends Controller
 {
     public function checkout()
     {
-        // Obtener los métodos de pago activos
         $metodos = PaymentMethod::activos()->orderBy('nombre')->get();
 
-        // Obtener el pedido pendiente del usuario
         $pedido = Pedido::where('user_id', auth()->id())
             ->where('estado', 'pendiente')
             ->first();
 
-        // Enviar las variables a la vista
         return view('checkout', compact('metodos', 'pedido'));
     }
 
     public function pagar(Request $request)
     {
-        // ✅ Validar datos
         $validated = $request->validate([
             'pedido_id'         => 'required|exists:pedidos,id',
             'total'             => 'required|numeric|min:0',
@@ -45,14 +41,13 @@ class PaymentController extends Controller
 
         try {
             $order = DB::transaction(function () use ($pedido, $validated, $request) {
-                // ✅ Crear la venta
+
                 $venta = Venta::create([
                     'user_id' => auth()->id(),
                     'total'   => $validated['total'],
                     'estado'  => 'pagado',
                 ]);
 
-                // ✅ Crear los detalles de la venta y descontar stock
                 foreach ($pedido->detalles as $detalle) {
                     $producto = \App\Models\Producto::lockForUpdate()->find($detalle->producto_id);
 
@@ -60,10 +55,8 @@ class PaymentController extends Controller
                         throw new Exception("El producto con ID {$detalle->producto_id} no existe.");
                     }
 
-                    // Descontar stock
                     $producto->decrement('stock', $detalle->cantidad);
 
-                    // Registrar detalle de venta
                     DetalleVenta::create([
                         'venta_id'    => $venta->id,
                         'producto_id' => $detalle->producto_id,
@@ -72,10 +65,9 @@ class PaymentController extends Controller
                     ]);
                 }
 
-                // ✅ Cambiar estado del pedido
+                // ✅ Estado correcto del pedido
                 $pedido->update(['estado' => 'pagado']);
 
-                // ✅ Crear la orden (para generar factura)
                 $order = Order::create([
                     'user_id'           => Auth::id(),
                     'total'             => $validated['total'],
@@ -85,7 +77,6 @@ class PaymentController extends Controller
                     'notas'             => $validated['notas'] ?? null,
                 ]);
 
-                // ✅ Agregar productos desde el pedido a la orden
                 foreach ($pedido->detalles as $detalle) {
                     $order->items()->create([
                         'producto_id'     => $detalle->producto_id,
@@ -98,7 +89,7 @@ class PaymentController extends Controller
                 return $order;
             });
 
-            // ✅ Generar y mostrar la factura en PDF
+            // ✅ Generar PDF como blob
             $pdf = PDF::loadView('pdf.invoice', [
                 'order'  => $order->load('items.producto'),
                 'method' => $order->paymentMethod,

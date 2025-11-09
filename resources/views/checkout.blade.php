@@ -14,7 +14,6 @@
     --ok: #d1fae5;
   }
 
-  /* ✅ Para que el redimensionado nunca sobrepase el contenedor */
   *,
   *::before,
   *::after {
@@ -92,17 +91,12 @@
     box-shadow: 0 0 0 4px var(--ring);
   }
 
-  /* ✅ El textarea solo crece verticalmente y no invade el botón */
   .field textarea {
     resize: vertical;
-    /* solo alto */
     min-height: 84px;
-    /* altura base agradable */
     max-height: 360px;
-    /* límite para no romper la tarjeta */
   }
 
-  /* radios como cards */
   .methods {
     display: grid;
     gap: 12px;
@@ -202,17 +196,14 @@
   </div>
   @endif
 
-  <form method="POST" action="{{ route('checkout.pagar') }}" class="card grid">
+  <form id="formPago" method="POST" action="{{ route('checkout.pagar') }}" class="card grid">
     @csrf
-
     <input type="hidden" name="pedido_id" value="{{ $pedido->id }}">
-
 
     <div class="field">
       <label>Total</label>
       <input type="number" name="total" step="0.01" min="0"
         value="{{ old('total', $pedido->total) }}" readonly required>
-
       <p class="hint">Este valor es solo de prueba.</p>
     </div>
 
@@ -254,89 +245,88 @@
       <button type="submit" class="bttn">Simular pago</button>
     </div>
   </form>
-  <!-- ✅ Popup flotante mejorado -->
-<div id="popup" style="
-  display:none;
-  position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background:rgba(0,0,0,0.5);
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-">
-  <div id="popupBox" style="
-    background:#fff;
-    padding:30px;
-    border-radius:12px;
-    text-align:center;
-    max-width:320px;
-    transform:scale(0.8);
-    opacity:0;
-    transition:all 0.25s ease;
+
+  <!-- ✅ Popup flotante -->
+  <div id="popup" style="
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.5);
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
   ">
-    <h2 style="color:green; margin-bottom:8px;">✅ Pago exitoso</h2>
-    <p>Tu pago se ha procesado correctamente.</p>
-    <button id="cerrarPopup" style="
-      margin-top:14px;
-      background:#a64d79;
-      color:#fff;
-      border:none;
-      padding:8px 14px;
-      border-radius:8px;
-      cursor:pointer;
-    ">Cerrar</button>
+    <div id="popupBox" style="
+      background:#fff;
+      padding:30px;
+      border-radius:12px;
+      text-align:center;
+      max-width:320px;
+      transform:scale(0.8);
+      opacity:0;
+      transition:all 0.25s ease;
+    ">
+      <h2 style="color:green; margin-bottom:8px;">✅ Pago exitoso</h2>
+      <p>Tu pago se ha procesado correctamente.</p>
+      <button id="cerrarPopup" style="
+        margin-top:14px;
+        background:#a64d79;
+        color:#fff;
+        border:none;
+        padding:8px 14px;
+        border-radius:8px;
+        cursor:pointer;
+      ">Cerrar</button>
+    </div>
   </div>
-</div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('formPago'); // ✅ más seguro
-  const popup = document.getElementById('popup');
-  const popupBox = document.getElementById('popupBox');
-  const cerrarBtn = document.getElementById('cerrarPopup');
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formPago');
+    const popup = document.getElementById('popup');
+    const popupBox = document.getElementById('popupBox');
+    const cerrarBtn = document.getElementById('cerrarPopup');
 
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const nuevaPestana = window.open('', '_blank');
 
-    const formData = new FormData(form);
-    const nuevaPestana = window.open('', '_blank'); // prevenir bloqueo
+      fetch(form.action, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: formData
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('Error en el pago');
+        return res.blob();
+      })
+      .then(blob => {
+        const url = URL.createObjectURL(blob);
+        nuevaPestana.location.href = url;
 
-    fetch(form.action, {
-      method: 'POST',
-      headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-      body: formData
-    })
-    .then(res => {
-      if (!res.ok) throw new Error('Error en el pago');
-      return res.blob();
-    })
-    .then(blob => {
-      const url = URL.createObjectURL(blob);
-      nuevaPestana.location.href = url;
+        popup.style.display = 'flex';
+        setTimeout(() => {
+          popupBox.style.transform = 'scale(1)';
+          popupBox.style.opacity = '1';
+        }, 50);
+      })
+      .catch(() => {
+        nuevaPestana.close();
+        alert('Ocurrió un error al procesar el pago.');
+      });
+    });
 
-      // Mostrar popup con animación
-      popup.style.display = 'flex';
+    cerrarBtn.addEventListener('click', () => {
+      popupBox.style.transform = 'scale(0.8)';
+      popupBox.style.opacity = '0';
       setTimeout(() => {
-        popupBox.style.transform = 'scale(1)';
-        popupBox.style.opacity = '1';
-      }, 50);
-    })
-    .catch(() => {
-      nuevaPestana.close();
-      alert('Ocurrió un error al procesar el pago.');
+        popup.style.display = 'none';
+        window.location.href = "{{ url('/') }}";
+      }, 200);
     });
   });
-
-  cerrarBtn.addEventListener('click', () => {
-    popupBox.style.transform = 'scale(0.8)';
-    popupBox.style.opacity = '0';
-    setTimeout(() => {
-      popup.style.display = 'none';
-      window.location.href = "{{ url('/') }}"; // tu landing page
-    }, 200);
-  });
-});
-</script>
+  </script>
 </div>
 @endsection
