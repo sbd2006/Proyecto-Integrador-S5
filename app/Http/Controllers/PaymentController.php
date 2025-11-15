@@ -34,22 +34,28 @@ class PaymentController extends Controller
             'total'             => 'required|numeric|min:0',
             'payment_method_id' => 'required|exists:payment_methods,id',
             'notas'             => 'nullable|string|max:255',
-            'email'             => Auth::check() ? 'nullable|email' : 'nullable|email',
+            'email'             => 'nullable|email',
         ]);
 
         $pedido = Pedido::with('detalles.producto')->findOrFail($validated['pedido_id']);
 
         try {
+
+            // ✅ Toda la operación dentro de una transacción
             $order = DB::transaction(function () use ($pedido, $validated, $request) {
 
+                // ✅ 1. Crear la venta
                 $venta = Venta::create([
                     'user_id' => auth()->id(),
                     'total'   => $validated['total'],
                     'estado'  => 'pagado',
                 ]);
 
+                // ✅ 2. Actualizar stock y registrar detalles de venta
                 foreach ($pedido->detalles as $detalle) {
-                    $producto = \App\Models\Producto::lockForUpdate()->find($detalle->producto_id);
+
+                    $producto = \App\Models\Producto::lockForUpdate()
+                        ->find($detalle->producto_id);
 
                     if (!$producto) {
                         throw new Exception("El producto con ID {$detalle->producto_id} no existe.");
@@ -65,22 +71,20 @@ class PaymentController extends Controller
                     ]);
                 }
 
-            }
+                // ✅ 3. Cambiar estado del pedido
+                $pedido->update(['estado' => 'pagado']);
 
-            // ✅ Cambiar estado del pedido
-            $pedido->update(['estado' => 'pagado']);
+                // ✅ 4. Crear la orden para la factura
+                $order = Order::create([
+                    'user_id'           => Auth::id(),
+                    'total'             => $validated['total'],
+                    'payment_method_id' => $validated['payment_method_id'],
+                    'status'            => 'pagado',
+                    'referencia'        => 'ORD-' . strtoupper(Str::random(8)),
+                    'notas'             => $validated['notas'] ?? null,
+                ]);
 
-            // ✅ Crear la orden (para generar factura)
-            $order = Order::create([
-                'user_id'           => Auth::id(),
-                'total'             => $validated['total'],
-                'payment_method_id' => $validated['payment_method_id'],
-                'status'            => 'pagado',
-                'referencia'        => 'ORD-' . strtoupper(Str::random(8)),
-                'notas'             => $validated['notas'] ?? null,
-            ]);
-
-
+                // ✅ 5. Registrar los ítems de la orden
                 foreach ($pedido->detalles as $detalle) {
                     $order->items()->create([
                         'producto_id'     => $detalle->producto_id,
@@ -93,7 +97,7 @@ class PaymentController extends Controller
                 return $order;
             });
 
-            // ✅ Generar PDF como blob
+            // ✅ 6. Generar PDF (fuera de la transacción)
             $pdf = PDF::loadView('pdf.invoice', [
                 'order'  => $order->load('items.producto'),
                 'method' => $order->paymentMethod,
